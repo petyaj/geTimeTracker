@@ -1,0 +1,46 @@
+#sortable {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+#sortable li {
+    margin: 0 3px 3px;
+    padding: 0.4em;
+    padding-left: 1.5em;
+    font-size: 1.4em;
+}
+
+.ui-state-highlight {
+    height: 60px;
+}
+
+.ui-state-default {
+    background: #e8e8e8;
+}
+
+.close {
+    opacity: 1;
+}
+
+#version {
+    margin: 11px 8px 0;
+    color: #FFF;
+    font-weight: 400;
+}
+
+.release {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.release > li {
+    margin: 0 3px 3px;
+    padding: 0.4em;
+}
+
+.release > li > ul {
+    list-style-type: disc;
+    padding-left: 1.5em;
+}

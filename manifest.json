@@ -1,0 +1,31 @@
+{
+  "manifest_version": 2,
+
+  "name": "HighLevel TimeTracking",
+  "version": "0.4.37",
+  "description": "Учет времени работы по сервисам HighLevel",
+  "options_page": "options.html",
+  "icons": {
+    "128": "images/icon128.png"
+  },    
+
+  "browser_action": {
+    "default_title": "HighLevel TimeTracking",
+    "default_icon": "images/favicon.png",
+    "default_popup": "popup.html"
+  },
+
+  "background": {
+    "page": "background.html",
+    "persistent": false
+  },
+
+  "permissions": [
+    "http://hl-servicedesk.sta.local/*",
+    "http://jira.sta.local/*",
+    "http://192.168.4.61:8080/*",
+    "http://192.168.4.70/*",
+    "notifications",
+    "alarms"
+  ]
+}

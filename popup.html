@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+        <!--styles-->
+        <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css">
+        <link rel="stylesheet" href="css/bootstrap/bootstrap-theme.min.css">        
+        <link rel="stylesheet" href="css/bootstrap/bootstrap-material-design.min.css">
+        <link rel="stylesheet" href="css/bootstrap/ripples.min.css">
+        <link rel="stylesheet" href="css/jqgrid/ui.jqgrid.css">
+        <link rel="stylesheet" href="css/themes/base/jquery-ui.min.css">
+        <link rel="stylesheet" href="css/themes/base/theme.css">
+        <link rel="stylesheet" href="css/hl/tt/style/hl.ext.css">        
+        <!--scripts-->
+        <script type="text/javascript" src="scripts/jquery/jquery-2.1.4.min.js"></script>
+        <!--script type="text/javascript" src="scripts/jquery/jquery.js"></script-->            
+        <script type="text/javascript" src="scripts/jquery/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="scripts/bootstrap/bootstrap.min.js"></script>
+        <script type="text/javascript" src="scripts/bootstrap/material.min.js"></script>
+        <script type="text/javascript" src="scripts/bootstrap/ripples.min.js"></script>
+        <script type="text/javascript" src="scripts/jqgrid/i18n/grid.locale-en.js"></script>
+        <script type="text/javascript" src="scripts/jqgrid/jquery.jqGrid.min.js"></script>
+        <!--highlevel library-->
+        <script type="text/javascript" src="scripts/hl/tt/scripts/constants.js"></script>
+        <script type="text/javascript" src="scripts/hl/tt/scripts/formatter.js"></script>
+        <script type="text/javascript" src="scripts/hl/tt/scripts/handlers.js"></script>
+        <script type="text/javascript" src="scripts/hl/tt/scripts/services.js"></script>
+        <script type="text/javascript" src="scripts/hl/tt/scripts/grids.js"></script>        
+        <!--highlevel library-->
+        <script type="text/javascript" src="scripts/jquery/dateFormat.js"></script>
+        <script type="text/javascript" src="scripts/popup.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="panel panel-toolbar">
+                <a href="http://hl-servicedesk.sta.local/" target="_blank"><img class="logo" src="images/sd_logo_tr.png"></a>
+                <a href="http://h-level.ru/" target="_blank"><img class="logo hl-logo" src="images/hl_logo_tr.png"></a>
+                <a href="http://jira.sta.local:8080/" target="_blank"><img class="logo" src="images/jira_min.png"></a>
+                <button class="btn active align-right" id="setup"><span class="ui-icon ui-icon-gear"></span>Настройки</button>                
+            </div>
+            <div>
+                <span id="version" class="pull-right" style="margin:9px;color:#777"></span>
+                <ul class="breadcrumb" style="margin-bottom: 5px;">
+                    <li><a href="#req" data-toggle="tab">Заявки <span class="badge">0</span></a></li>
+                    <li><a href="#tsk" data-toggle="tab">Задачи <span class="badge">0</span></a></li>
+                    <li><a href="#tck" data-toggle="tab">Тикеты <span class="badge">0</span></a></li>
+                    <li><a href="#nte" data-toggle="tab">Заметки <span class="badge">0</span></a></li>
+                </ul>                
+                <div class="tab-content">
+                    <div id="req" class="tab-pane fade">
+                        <table id="jqGridReq"></table>
+                        <div id="jqGridReqPager"></div>
+                    </div>
+                    <div id="tsk" class="tab-pane fade">
+                        <table id="jqGridTsk"></table>
+                        <div id="jqGridTskPager"></div>
+                    </div>
+                    <div id="tck" class="tab-pane fade">
+                        <table id="jqGridTck"></table>
+                        <div id="jqGridTckPager"></div>
+                    </div>
+                    <div id="nte" class="tab-pane fade">
+                        <table id="jqGridNte"></table>
+                        <div id="jqGridNtePager"></div>
+                    </div>
+                </div>  
+            </div>          
+        </div>
+        <div id="modal" class="modal fade row">
+            <div class="col-xs-offset-1 col-xs-10">
+                <div class="modal-dialog">
+                    <div class="modal-content">                        
+                        <div class="modal-body">
+                            <div class="form-group label-floating">
+                                <label class="control-label" for="worklogTmplt">Шаблоны комментария</label>
+                                <input type="text" class="form-control" id="worklogTmplt" list="worklogTmpltVal">
+                                <datalist id="worklogTmpltVal"></datalist>
+                            </div>
+                            <textarea class="form-control" id="worklogComment" style="width:100%; max-width:100%; min-height:60px; max-height:180px; resize:auto"></textarea>                            
+                        </div>
+                        <div class="modal-footer">
+                            <div class="checkbox pull-left" style="margin:5px 16px">
+                                <label><input type="checkbox" id="chSaveTmplt"> Сохранить шаблон</label>                                
+                            </div>
+                            <button type="button" class="btn btn-success" id="saveWorklog">Сохранить</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Отменить</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 'Create Jira Ticket' Area -->
+        <div id="jraModal" class="modal fade row" style="overflow-y:overlay">
+            <div class="col-xs-offset-1 col-xs-10">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <div class="form-group label-floating">
+                                        <label class="control-label" for="projectId">Проект</label>
+                                        <select class="form-control" id="projectId" name="projectId" required>
+                                            <option value="-1">--- Select Project ---</option>                                            
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6 hidden">
+                                    <div class="form-group label-floating">
+                                        <label class="control-label" for="issueId">Тип запроса</label>
+                                        <select class="form-control" id="issueId" name="issueId" required>
+                                            <option value="-1">--- Select Issue Type ---</option>
+                                        </select>
+                                    </div>
+                                </div>                                
+                            </div>
+                            <div id="columnfields-2"></div>
+                            <div id="columnfields-3"></div>
+                            <div id="columnfields-1"></div>
+                        </div>
+                        <div class="modal-footer">                     
+                            <button type="button" class="btn btn-success" id="saveTck">Create Jira Ticket</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="alert alert-success alert-dismissable col-xs-offset-2 col-xs-8" style="position:fixed; top:0; left:0; z-index:1060">
+            <strong></strong>
+        </div>
+        <div class="alert alert-warning alert-dismissable col-xs-offset-2 col-xs-8" style="position:fixed; top:0; left:0; z-index:1060">
+            <strong></strong>
+        </div>
+        <div class="alert alert-info alert-dismissable col-xs-offset-2 col-xs-8" style="position:fixed; top:0; left:0; z-index:1060">
+            <strong></strong>
+        </div>
+        <div style="display: none">
+            <div id="row_div" class="row">                
+            </div>
+            <div id="inputDiv">
+                <div class="col-xs-6">
+                    <div class="form-group label-floating">
+                        <label class="control-label"></label>
+                        <input type="text" class="form-control">
+                    </div>   
+                </div>             
+            </div>
+            <div id="selectDiv">
+                <div class="col-xs-6">
+                    <div class="form-group label-floating">
+                        <label class="control-label"></label>
+                        <select class="form-control">
+                            <option value="-1">--- Select ---</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div id="textAreaDiv">
+                <div class="col-xs-12">
+                    <div class="form-group label-floating">
+                        <label class="control-label"></label>
+                        <textarea class="form-control" style="height:120px; resize:auto; max-width:100%"></textarea>
+                    </div>
+                </div>
+            </div>
+            <p id="infoP" class="help-block"></p>
+        </div>
+        <!---->            
+    </body>
+</html>

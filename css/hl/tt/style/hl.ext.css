@@ -1,0 +1,99 @@
+body {
+    background-color: #eee;
+}
+
+.play-btn {
+    height:24px;
+    vertical-align:middle;
+    outline:none;
+}
+
+.options {
+    margin: 15px;
+}
+
+table {
+    border-collapse: separate;
+}
+
+.container {
+    padding: 5px;
+}
+
+.panel {
+    position: relative;
+    margin-bottom: 5px;
+}
+
+.panel-toolbar {
+    background-color: transparent;
+    padding: 0;
+    height: 50px;
+    box-shadow: none;
+}
+
+.logo {
+    height: 50px;
+}
+
+.hl-logo {
+    float: right;   
+}
+
+#setup {
+    height: 50px;
+    margin: 0;
+    outline: none !important;
+}
+
+.btn.align-right {
+    float: right;
+}
+
+.btn .ui-icon {
+    display: inline-block;
+    margin-right: 3px;
+}
+
+#jqGridReqPager_left, #jqGridTskPager_left, #jqGridTckPager_left, #jqGridNtePager_left {
+    width: inherit !important;
+}
+
+a, a:hover, a:focus {
+    color: #5aa6d2; 
+}
+
+.breadcrumb>.active>a, a:hover, a:focus {
+    color: #777;
+    text-decoration: inherit;
+}
+
+input.worktime {
+    font-family: Courier, monospace !important;
+    border: 1px solid black;
+    padding: 0 4px !important;
+}
+
+.FormElement {
+    width: 220px;
+    max-width: 220px;
+}
+
+.EditTable td textarea {
+    width: 220px;
+    max-width: 220px;
+    height: 50px;
+    max-height: 90px;
+}
+
+input[type=checkbox].FormElement {
+    width: 20px;
+    margin-top: 5px;
+}
+
+.badge {
+    color: inherit;
+    line-height: .7;
+    background-color: transparent;
+    border: 1px solid;
+}

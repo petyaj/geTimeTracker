@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Настройки</title>
+    <!--style-->
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/icon?family=Material+Icons">    
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="css/bootstrap/bootstrap-material-design.min.css">
+    <link rel="stylesheet" href="css/bootstrap/ripples.min.css">
+    <link rel="stylesheet" href="css/themes/base/jquery-ui.min.css">
+    <link rel="stylesheet" href="css/themes/base/theme.css">
+    <link rel="stylesheet" href="css/hl/tt/style/hl.ext.css">
+    <link rel="stylesheet" href="css/hl/tt/style/hl.opt.css">
+    <!--scripts-->
+    <script type="text/javascript" src="scripts/jquery/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="scripts/jquery/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="scripts/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="scripts/bootstrap/material.min.js"></script>
+    <script type="text/javascript" src="scripts/bootstrap/ripples.min.js"></script>
+    <script type="text/javascript" src="scripts/hl/tt/scripts/constants.js"></script>
+    <script type="text/javascript" src="scripts/hl/tt/scripts/handlers.js"></script>
+    <script type="text/javascript" src="scripts/options.js"></script>
+</head>
+<body>    
+    <div class="options row" style="margin:15px">
+        <div class="col-sm-offset-2 col-sm-8 well">
+            <span id="version" class="pull-right"></span>
+            <ul class="nav nav-tabs" style="margin-bottom:20px">
+                <li class="active"><a href="#settings" data-toggle="tab">Настройка</a></li>
+                <li><a href="#release" data-toggle="tab">Обновления</a></li>
+            </ul>
+            <div id="tabs" class="tab-content">
+                <div class="tab-pane fade active in" id="settings">
+                    <form role="form" method="POST" class="form-horizontal col-sm-12">
+                        <fieldset>                            
+                            <div class="row">
+                                <div class="col-sm-6 form-group label-floating" style="margin:0 0 14px">
+                                    <label class="control-label" for="techKey">Service Desk API Key</label>
+                                    <input class="form-control" id="techKey" name="techKey">
+                                </div>
+                                <div class="col-sm-6 form-group label-floating" style="margin:0 0 14px">
+                                    <label class="control-label" for="jraBase">Jira Base Authentication</label>
+                                    <input class="form-control" id="jraBase" name="jraBase">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <ul id="sortable">
+                                    <li class="ui-state-default" id="req">             
+                                        <input type="radio" name="defTab" id="defTab_req" class="close">
+                                        <div class="row">
+                                            <div class="col-sm-1" style="margin:10px 0">
+                                                <label>SDP</label>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <div class="checkbox">
+                                                    <label><input type="checkbox" id="chReq"> Requests</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <div class="form-group label-floating" style="margin:0">
+                                                    <label class="control-label" for="reqLimit">Requests Limit</label>
+                                                    <input class="form-control" id="reqLimit" name="reqLimit" type="number" min="0" max="100" required>
+                                                </div>  
+                                            </div>
+                                            <div class="col-sm-5">
+                                                <div class="form-group label-floating" style="margin:0">
+                                                    <label class="control-label" for="reqFilter">Requests Filter</label>
+                                                    <select  class="form-control" id="reqFilter" required></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="ui-state-default" id="tsk">
+                                        <input type="radio" name="defTab" id="defTab_tsk" class="close">
+                                        <div class="row">
+                                            <div class="col-sm-1" style="margin:10px 0">
+                                                <label>SDP</label>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <div class="checkbox">
+                                                    <label><input type="checkbox" id="chTsk"> Tasks</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <div class="form-group label-floating" style="margin:0">
+                                                    <label class="control-label" for="tskLimit">Tasks Limit</label>
+                                                    <input class="form-control" id="tskLimit" name="tskLimit" type="number" min="1" max="100" required>
+                                                </div>  
+                                            </div>
+                                            <div class="col-sm-5">
+                                                <div class="form-group label-floating" style="margin:0">
+                                                    <label class="control-label" for="tskFilter">Tasks Filter</label>
+                                                    <select class="form-control" id="tskFilter" required>
+                                                        <option></option>
+                                                        <option value="MYALLTASKS">Все мои задачи</option>
+                                                        <option value="MYOPEN">Мои открытые задачи</option>                                                        
+                                                        <option value="MYPENDING">Мои задачи в очереди</option>
+                                                        <option value="GROUPTASKS">В ожидании - Мои груповые задачи</option>
+                                                    </select>
+                                                </div> 
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="ui-state-default" id="tck">
+                                        <input type="radio" name="defTab" id="defTab_tck" class="close">
+                                        <div class="row">
+                                            <div class="col-sm-1" style="margin:10px 0">
+                                                <label>JIRA</label>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <div class="checkbox">
+                                                    <label><input type="checkbox" id="chTck"> Tickets</label>                                
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <div class="form-group label-floating" style="margin:0">
+                                                    <label class="control-label" for="tckLimit">Tickets Limit</label>
+                                                    <input class="form-control" id="tckLimit" name="tckLimit" type="number" min="1" max="50" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-5">
+                                                <div class="row form-group label-floating" style="margin:0; padding-bottom:0">
+                                                    <label class="control-label" for="tckFilter">Jira Tickets Filter</label>
+                                                    <select class="form-control" id="tckFilter"></select>                                                        
+                                                </div>
+                                                <div class="row">
+                                                    <div class="checkbox col-sm-5" style="padding-top:0">
+                                                        <label><input type="checkbox" id="chMyTck"> My tickets</label>                                                        
+                                                    </div>           
+                                                    <div class="checkbox col-sm-7" style="padding-top:0">
+                                                        <label><input type="checkbox" id="chOpnSprTck"> Open Sprints</label>
+                                                    </div>
+                                                </div>      
+                                            </div>                                            
+                                        </div>                                
+                                    </li>
+                                    <li class="ui-state-default" id="nte">
+                                        <input type="radio" name="defTab" id="defTab_nte" class="close">
+                                        <div class="row">
+                                            <div class="col-sm-1" style="margin:10px 0">
+                                                <label>LOCAL</label>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <div class="checkbox">
+                                                    <label><input type="checkbox" id="chNte"> Notes</label>
+                                                </div>                        
+                                            </div>                        
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="checkbox">
+                                <label><input type="checkbox" id='chLastTab'> Use Last open Tab instead Default Tab</label>
+                            </div>
+                        </fieldset>                
+                        <button type="submit" id="saveBtn" class="btn btn-success pull-right">Сохранить</button>                
+                    </form>  
+                </div>
+                <div class="tab-pane fade" id="release">
+                    <ul class="release">
+                        <li class="ui-state-default">
+                            <div class="row">
+                                <div class="col-sm-2"><span>29.09.2017</span></div>
+                                <div class="col-sm-push-8 col-sm-2"><span class="pull-right">Ver. 0.4.36</span></div>
+                            </div>
+                            <ul>
+                                <li>Персонифицирован функционал фиксации времени "С комментарием" по шаблонам</li>                                
+                                <li>Исправления стабильности функционирования приложения</li> 
+                            </ul>
+                        </li>
+                        <li class="ui-state-default">
+                            <div class="row">
+                                <div class="col-sm-2"><span>29.08.2017</span></div>
+                                <div class="col-sm-push-8 col-sm-2"><span class="pull-right">Ver. 0.4.35</span></div>
+                            </div>
+                            <ul>
+                                <li>В функционал фиксации времени по "С комментарием" добавлены шаблоны</li>
+                                <li>Доработана вкладка заметок</li>
+                                <li>Доработан фильтр загружаемых тикетов Jira</li>
+                                <li>Добавлен механизм обработки кастомных каскадных полей для интеграции SDP и Jira</li>
+                                <li>Исправления стабильности функционирования приложения</li> 
+                            </ul>
+                        </li>
+                        <li class="ui-state-default">
+                            <div class="row">
+                                <div class="col-sm-2"><span>04.07.2017</span></div>
+                                <div class="col-sm-push-8 col-sm-2"><span class="pull-right">Ver 0.4.33</span></div>
+                            </div>
+                            <ul>                                
+                                <li>Исправлена ошибка редактирования уже созданных заметок</li>
+                                <li>Доработан функционал по вкладкам</li>
+                                <li>Выполнена реорганизация страницы настроек, добавлена вкладка с описанием всех осуществленных доработок</li>
+                                <li>Добавлен функционал настройки фильтра загружаемых задач SDP</li>
+                                <li>Мелкие исправления стабильности функционирования приложения</li>                                
+                            </ul>
+                        </li>
+                        <li class="ui-state-default">                            
+                            <div class="row">
+                                <div class="col-sm-2"><span>12.06.2017</span></div>
+                                <div class="col-sm-push-8 col-sm-2"><span class="pull-right">Ver 0.4.29</span></div>
+                            </div>
+                            <ul>                                
+                                <li>Добавлен функционал создания тикета Jira из заявки SDP</li>
+                                <li>Исправлен механизм отображения label "play" на значке приложения и нотификации в случае взятия в работу заметки</li>
+                                <li>Мелкие исправления стабильности функционирования приложения</li>                                
+                            </ul>
+                        </li>                        
+                        <li class="ui-state-default">
+                            <div class="row">
+                                <div class="col-sm-2"><span>05.06.2017</span></div>
+                                <div class="col-sm-push-8 col-sm-2"><span class="pull-right">Ver 0.4.26</span></div>                                
+                            </div>
+                            <ul>
+                                <li>Добавлен функционал создания локальных заметок с возможностью ведения учета времени по ним</li>
+                                <li>Выполнена реорганизация хранимой локально в браузере информации по затраченному времени - изменены модель и тип объекта</li>
+                                <li>Мелкие исправления стабильности функционирования приложения</li>
+                            </ul>
+                        </li>
+                        <li class="ui-state-default">
+                            <div class="row">
+                                <div class="col-sm-2"><span>29.05.2017</span></div>
+                                <div class="col-sm-push-8 col-sm-2"><span class="pull-right">Ver 0.4.24</span></div>
+                            </div>
+                            <ul>
+                                <li>Добавлен функционал учета времени по тикетам Jira</li>
+                                <li>Выполнена реорганизация структуры файлов приложения</li>
+                                <li>Мелкие исправления стабильности функционирования приложения</li>
+                            </ul>
+                        </li>
+                        <li class="ui-state-default">
+                            <div class="row">
+                                <div class="col-sm-2"><span>06.04.2017</span></div>
+                                <div class="col-sm-push-8 col-sm-2"><span class="pull-right">Ver 0.4.22</span></div>
+                            </div>
+                            <ul>
+                                <li>Добавлен функционал настройки фильтра загружаемых заявок</li>
+                            </ul>
+                        </li>
+                        <li class="ui-state-default">
+                            <div class="row">
+                                <div class="col-sm-2"><span>03.04.2017</span></div>
+                                <div class="col-sm-push-8 col-sm-2"><span class="pull-right">Ver 0.4.21</span></div>
+                            </div>
+                            <ul>
+                                <li>Добавлен функционал создания заявки из приложения</li>
+                                <li>Мелкие исправления стабильности функционирования приложения</li>
+                            </ul>
+                        </li>
+                        <li class="ui-state-default">
+                            <div class="row">
+                                <div class="col-sm-2"><span>23.02.2017</span></div>
+                                <div class="col-sm-push-8 col-sm-2"><span class="pull-right">Ver 0.4.20</span></div>
+                            </div>
+                            <ul>
+                                <li>Реализован механизм отображения счетчика заявки/задачи в реальном времени</li>
+                                <li>Реализован мезанизм изменения времени счетчика заявки/задачи в большую и меньшую сторону с шагом 5 минут</li>
+                                <li>Реализован механизм пагинации по задачам, повышен лимит одноразово загружаемых данных по заявкам/задачам до 100</li>
+                                <li>Убраны неактуальные поля</li>
+                            </ul>
+                        </li>
+                        <li class="ui-state-default">
+                            <div class="row">
+                                <div class="col-sm-2"><span>05.01.2017</span></div>
+                                <div class="col-sm-push-8 col-sm-2"><span class="pull-right">Ver 0.4.17</span></div>
+                            </div>
+                            <ul>
+                                <li>Реализован поиск заявок/задач по ID</li>
+                                <li>Добавлен функционал обновления списка заявок/задач</li>
+                                <li>Доработан механизм определения текущей заявки/задачи (для корректного отображения в общем списке)</li>
+                                <li>Исправлен механизм взятия заявки/задачи в работу для случая, если по текущей заявке/задаче не была создана строка журнала работ вручную</li>
+                                <li>Исправлены мелкие ошибки</li>
+                            </ul>
+                        </li>
+                        <li class="ui-state-default">
+                            <div class="row">
+                                <div class="col-sm-2"><span>23.12.2016</span></div>
+                                <div class="col-sm-push-8 col-sm-2"><span class="pull-right">Ver 0.4.14</span></div>
+                            </div>
+                            <ul>
+                                <li>Исправления в связи с обновлением SD</li>
+                                <li>Реализован фильтр отображения активных заявок вместо открытых</li>
+                                <li>Сортировка заявок реализована по полю "Статус"</li>
+                                <li>Реализован механизм пагинации по заявкам</li>
+                            </ul>
+                        </li>
+                        <li class="ui-state-default">
+                            <div class="row">
+                                <div class="col-sm-2"><span>16.12.2016</span></div>
+                                <div class="col-sm-push-8 col-sm-2"><span class="pull-right">Ver 0.4.11</span></div>
+                            </div>
+                            <ul>
+                                <li>Исправления по дублированию строк журнала работ</li>
+                            </ul>
+                        </li>
+                        <li class="ui-state-default">
+                            <div class="row">
+                                <div class="col-sm-2"><span>08.12.2016</span></div>
+                                <div class="col-sm-push-8 col-sm-2"><span class="pull-right">Ver 0.4.10</span></div>
+                            </div>
+                            <ul>
+                                <li>Релиз приложения</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>           
+        </div>        
+    </div>
+    <div id="modal" class="modal fade row">
+        <div class="col-xs-offset-1 col-xs-10">
+            <div class="modal-dialog">
+                <div class="modal-content">                        
+                    <div class="modal-body">
+                        <div class="form-group label-floating">
+                            <label class="control-label" for="jraUser">Jira User Name</label>
+                            <input class="form-control" id="jraUser" name="jraUser" required autofocus>
+                        </div>
+                        <div class="form-group label-floating">
+                            <label class="control-label" for="jraPsw">Jira User Password</label>
+                            <input class="form-control" id="jraPsw" name="jraPsw" type="password" required>
+                        </div> 
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" id="saveJraAuth">Сохранить</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Отменить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
