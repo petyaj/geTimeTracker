@@ -19,8 +19,11 @@ var formatter = {
         var minutes = parseInt((cellvalue - (hours * 3600000))/60000);
         var time = (hours < 10 ? '0' + hours : hours) + ':' + (minutes < 10 ? '0' + minutes : minutes);
 
-        if(ent === 'Nte' && localStorage['curNte'] != rowObject.ID)            
-            return time;
+        if(ent === 'Nte'){
+            var lsCurEnt = localStorage['curEnt'] ? JSON.parse(localStorage['curEnt']) : null;
+            if(!lsCurEnt || lsCurEnt.ent !== ent || lsCurEnt.eid != rowObject.ID)
+                return time;
+        }            
 
         return '<input type="button" id="' + 'down_' + ent + '_' + rowObject.jqId +'" class="worktime" value="-" title="-5 мин">'
                 + '  ' + time + '  '

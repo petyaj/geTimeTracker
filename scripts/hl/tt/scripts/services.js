@@ -1,8 +1,7 @@
 // GETTERS
 var getters = {
     getEnts: function (ent, callback) {
-        if(ent === 'Nte') {
-            //var parsedData = localStorage['localNotes'] ? JSON.parse(localStorage['localNotes']) : [];
+        if(ent === 'Nte') {            
             var parsedData = localStorage['Ntes'] ? JSON.parse(localStorage['Ntes']) : [];
             callback(parsedData);
         }
@@ -178,26 +177,25 @@ var initiators = {
 
     initCurEnt: function (ent) {
         debugger;
-        if(localStorage['cur' + ent])
+        var lsCurEnt = localStorage['curEnt'] ? JSON.parse(localStorage['curEnt']) : null;
+        if(lsCurEnt && lsCurEnt.ent === ent)
         {
             var grid = '#jqGrid' + ent;
-            //var curEnt = JSON.parse(localStorage['cur' + ent]);
-            var curEntId = localStorage['cur' + ent];
             var ids = $(grid).jqGrid('getGridParam', 'records');
 
             if(ids != 0){
-                var entOb = handlers.findEntityById(ent, $(grid).jqGrid('getGridParam', 'data'), curEntId);                
+                var entOb = handlers.findEntityById(ent, $(grid).jqGrid('getGridParam', 'data'), lsCurEnt.eid);            
                 if(entOb.length){
                     var ents = JSON.parse(localStorage[ent + 's']);
-                    var curEnt = handlers.findEntityById('', ents, curEntId)[0];
+                    var curEnt = handlers.findEntityById('', ents, lsCurEnt.eid)[0];
                     handlers.updateEntity(ent, curEnt.ID, (new Date()).getTime() - (new Date(curEnt.Active)).getTime() + (ent === 'Nte' ? curEnt.Time : 0));                    
                     return;
                 }                
             }
 
-            getters.getEnt(ent, curEntId, function (parsedData) {
+            getters.getEnt(ent, lsCurEnt.eid, function (parsedData) {
                 var ents = JSON.parse(localStorage[ent + 's']);
-                var entOb = handlers.findEntityById('', ents, curEntId)[0];
+                var entOb = handlers.findEntityById('', ents, lsCurEnt.eid)[0];
                 handlers.addCurrentEntity(ent, parsedData, entOb.Active);                
             });            
         }

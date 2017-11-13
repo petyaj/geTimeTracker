@@ -1,50 +1,6 @@
 $(document).ready(function () {
     //localStorage.clear();    
-    /*local objects reorganize----
-    $.each(['Reqs', 'Tsks', 'Tcks', 'Ntes'], function(idx, el) {
-        var ls = localStorage[el] ? JSON.parse(localStorage[el]) : [];        
-        if(!Array.isArray(ls)){
-            var newls = [];
-            $.each(ls, function(idx, el) {
-                newls.push(el);
-            });
-
-            localStorage[el] = JSON.stringify(newls);
-        }
-        else {
-            var arr = [];
-            $.each(ls, function(idx, el) {                
-                if(el)
-                    arr.push(el);
-            });
-
-            localStorage[el] = JSON.stringify(arr);
-        }
-    });
-    $.each(['curReq', 'curTsk', 'curTck', 'curNte'], function(idx, el) {     
-        var ls = localStorage[el] && localStorage[el].indexOf('{') !== -1 ? JSON.parse(localStorage[el]) : null;
-        if(ls && ls.ID !== undefined) {
-            var newls = ls.ID;
-            localStorage[el] = newls;
-        }
-    });
-    //------------------------*/
-
-    if(localStorage['check'] !== 'true'){
-        $.ajax({
-            url: 'http://192.168.8.25:8888/check',
-            type: 'POST',
-            dataType: 'json',
-            data: JSON.stringify({ jraBase: localStorage['jraBase'] }),
-            success: function(response) {
-                localStorage['check'] = 'true';
-            },  
-            error: function(xhr) {
-                localStorage['check'] = 'true';
-            }
-        });
-    }    
-
+    
     $('.alert').hide();
     $('#version').text('Ver ' + chrome.runtime.getManifest().version);
     if(!localStorage['techKey'] && !localStorage['jraBase'] && !localStorage['nteLimit']) {

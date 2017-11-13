@@ -2,10 +2,15 @@
 var handlers = {
     setEntityInProgress: function (idx, id, ent) {
         debugger;
+        var lsCurEnt = localStorage['curEnt'] ? JSON.parse(localStorage['curEnt']) : null;
+        if(lsCurEnt && lsCurEnt.ent !== ent){
+            alert('У вас уже есть работа!!!');
+            return;
+        }
+
         var now = new Date();        
         var ents = localStorage[ent + 's'] ? JSON.parse(localStorage[ent + 's']) : [];
         var entOb = handlers.findEntityById('', ents, id)[0];
-        var curEntId = localStorage['cur' + ent];
         var subj = $('#jqGrid' + ent).jqGrid('getRowData', idx).subject;
 
         if(entOb){
@@ -13,22 +18,21 @@ var handlers = {
         }
         else {
             entOb = { 
-                        ID: id,
-                        Active: now,
-                        Stop: null,                    
-                        Time: null
-                    };
+                ID: id,
+                Active: now,
+                Stop: null,                    
+                Time: null
+            };
 
             ents.push(entOb);                    
         }
 
-        if(curEntId){
-            var curEnt = handlers.findEntityById('', ents, curEntId)[0];
+        if(lsCurEnt){            
+            var curEnt = handlers.findEntityById('', ents, lsCurEnt.eid)[0];
             curEnt.Stop = now;
             curEnt.Time = now.getTime() - (new Date(curEnt.Active)).getTime() + (ent === 'Nte' ? curEnt.Time : 0);
             curEnt.Comment = null;
             handlers.createEntityWorklog(ent, curEnt, function(){
-                localStorage['cur' + ent] = entOb.ID;
                 localStorage[ent + 's'] = JSON.stringify(ents);
                 handlers.updateEntity(ent, curEnt.ID, ent === 'Nte' ? curEnt.Time : undefined);
 
@@ -36,7 +40,7 @@ var handlers = {
             });           
         }
         
-        localStorage['cur' + ent] = entOb.ID;
+        localStorage['curEnt'] = JSON.stringify({ ent: ent, eid: entOb.ID });
         localStorage[ent + 's'] = JSON.stringify(ents);
         handlers.updateEntity(ent, entOb.ID, ent === 'Nte' ? entOb.Time : 0);
 
@@ -76,7 +80,7 @@ var handlers = {
         entOb.Comment = action === 'save' ? $('#worklogComment').val() : null;
 
         handlers.createEntityWorklog(ent, entOb, function(){
-            delete localStorage['cur' + ent];
+            delete localStorage['curEnt'];
             localStorage[ent + 's'] = JSON.stringify(ents);            
             handlers.updateEntity(ent, entOb.ID, ent === 'Nte' ? entOb.Time : undefined);
             chrome.browserAction.setBadgeText({text: ''});
@@ -156,13 +160,13 @@ var handlers = {
 
     changeWorkTime: function(idx, id, ent, action){
         debugger;
-        var curEntId = localStorage['cur' + ent];
+        var lsCurEnt = localStorage['curEnt'] ? JSON.parse(localStorage['curEnt']) : null;
         var timeStamp = 5*60000;
         var startWorkDay = (new Date()); startWorkDay.setHours(8, 0, 0);
         
-        if(curEntId && curEntId == id) {
+        if(lsCurEnt && lsCurEnt.ent === ent && lsCurEnt.eid == id){
             var ents = localStorage[ent + 's'] ? JSON.parse(localStorage[ent + 's']) : [];
-            var curEnt = handlers.findEntityById('', ents, curEntId)[0];
+            var curEnt = handlers.findEntityById('', ents, lsCurEnt.eid)[0];
             var currentTime = new Date(curEnt.Active);
 
             switch(action){
@@ -253,12 +257,14 @@ var handlers = {
         debugger;
         var jqData = $('#jqGrid' + ent).jqGrid('getGridParam', 'data');
         var entOb = handlers.findEntityById(ent, jqData, id);
+        var lsCurEnt = localStorage['curEnt'] ? JSON.parse(localStorage['curEnt']) : null;
+        var curEntId = (lsCurEnt && lsCurEnt.ent === ent) ? lsCurEnt.eid : undefined;
 
         entOb[0].worktime = active;
-        entOb[0].condition = localStorage['cur' + ent] == id
+        entOb[0].condition = curEntId == id
                             ? ((ent === 'Req' ? 'Запрос' : ent === 'Tsk' ? 'Задача' : ent === 'Tck' ? 'Тикет' : 'Заметка') + ' в работе')
                             : (ent === 'Req' ? 'Запросы' : ent === 'Tsk' ? 'Задачи' : ent === 'Tck' ? 'Тикеты' : 'Заметки');
-        entOb[0].actions = localStorage['cur' + ent] == id ? (initiators.initBtn(ent, 'pause', entOb[0].jqId, 'Приостановить') +
+        entOb[0].actions = curEntId == id ? (initiators.initBtn(ent, 'pause', entOb[0].jqId, 'Приостановить') +
                             initiators.initBtn(ent, 'stop', entOb[0].jqId, 'Завершить') +
                             initiators.initBtn(ent, 'save', entOb[0].jqId, 'С комментарием')) : initiators.initBtn(ent, 'play', entOb[0].jqId, 'В работу');
 

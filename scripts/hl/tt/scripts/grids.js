@@ -913,10 +913,10 @@ var navGrids = {
                 debugger;
                 if(response.status == 200)
                 {
-                    var ID = $('#jqGridNte').jqGrid('getRowData', postdata.id).eid;
-                    var curEntId = localStorage['curNte'];
-                    if(curEntId == ID)
-                        delete localStorage['curNte'];
+                    var ID = $('#jqGridNte').jqGrid('getRowData', postdata.id).eid;                    
+                    var lsCurEnt = localStorage['curEnt'] ? JSON.parse(localStorage['curEnt']) : null;
+                    if(lsCurEnt && lsCurEnt.ent === 'Nte' && lsCurEnt.eid == ID)                        
+                        delete localStorage['curEnt'];
 
                     var localNotes = JSON.parse(localStorage['Ntes']);                      
                     $.each(localNotes, function(idx, el) {
@@ -927,6 +927,9 @@ var navGrids = {
                     });
 
                     localStorage['Ntes'] = JSON.stringify(localNotes);
+                    chrome.browserAction.setBadgeText({text: ''});
+                    chrome.browserAction.setBadgeBackgroundColor({color: '#000'})
+                    chrome.notifications.clear(ID.toString());
                 }
 
                 return [true, response.statusText];
