@@ -21,6 +21,7 @@
         <script type="text/javascript" src="scripts/bootstrap/ripples.min.js"></script>
         <script type="text/javascript" src="scripts/jqgrid/i18n/grid.locale-en.js"></script>
         <script type="text/javascript" src="scripts/jqgrid/jquery.jqGrid.min.js"></script>
+        <!--script type="text/javascript" src="scripts/jqgrid/plugins/jquery.contextmenu.js"></script-->
         <!--highlevel library-->
         <script type="text/javascript" src="scripts/hl/tt/scripts/constants.js"></script>
         <script type="text/javascript" src="scripts/hl/tt/scripts/formatter.js"></script>
@@ -40,7 +41,7 @@
                 <button class="btn active align-right" id="setup"><span class="ui-icon ui-icon-gear"></span>Настройки</button>                
             </div>
             <div>
-                <span id="version" class="pull-right" style="margin:9px;color:#777"></span>
+                <span id="version" class="pull-right" style="margin:9px;color:#777"></span>                
                 <ul class="breadcrumb" style="margin-bottom: 5px;">
                     <li><a href="#req" data-toggle="tab">Заявки <span class="badge">0</span></a></li>
                     <li><a href="#tsk" data-toggle="tab">Задачи <span class="badge">0</span></a></li>
@@ -166,6 +167,15 @@
             </div>
             <p id="infoP" class="help-block"></p>
         </div>
-        <!---->            
+        <!---->
+        <!-- Контекстное меню
+        <div class="contextMenu" id="contextMenu" style="display:none">
+            <ul style="width:300px; font-size:70%">
+                <li id="play">                    
+                    <span style="font-size:100%; font-family:Verdana">В работу</span>
+                </li>
+            </ul>
+        </div>
+        -->
     </body>
 </html>

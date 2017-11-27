@@ -4,7 +4,7 @@ var handlers = {
         debugger;
         var lsCurEnt = localStorage['curEnt'] ? JSON.parse(localStorage['curEnt']) : null;
         if(lsCurEnt && lsCurEnt.ent !== ent){
-            alert('У вас уже есть работа!!!');
+            alert('У Вас уже находится в работе ' + constants.entityDictionary[lsCurEnt.ent][0].toLowerCase() + ' №' + lsCurEnt.eid);
             return;
         }
 
@@ -45,24 +45,12 @@ var handlers = {
         handlers.updateEntity(ent, entOb.ID, ent === 'Nte' ? entOb.Time : 0);
 
         //Настройка бэйджа и push-уведомления
-        constants.notification.title = 'Сейчас в работе ' + (ent === 'Req' ? 'заявка' : ent === 'Tsk' ? 'задача' : ent === 'Tck' ? 'тикет' : 'заметка') + ' №' + entOb.ID;
+        constants.notification.title = 'Сейчас в работе ' + constants.entityDictionary[ent][0].toLowerCase() + ' №' + entOb.ID;
         constants.notification.message = subj;
-        //constants.notification.buttons = [{ title: 'PAUSE', iconUrl: 'images/iconpause.png' }, { title: 'STOP', iconUrl: 'images/iconstop.png' }];
-        chrome.notifications.create(entOb.ID.toString(), constants.notification);
-        chrome.browserAction.setBadgeText({text: 'play'});
 
-        /*chrome.notifications.onButtonClicked.addListener(function(notificationId, buttonIndex){
-            debugger;
-            switch(buttonIndex)
-            {
-                case 0:
-                    handlers.saveEntityWorklog(null, notificationId, 'Tsk', 'pause');
-                    break;
-                case 1:                                    
-                    handlers.setRequestInDone(null, notificationId);
-                    break;
-            }
-        });*/
+        chrome.notifications.create(entOb.ID.toString(), constants.notification);
+        chrome.browserAction.setBadgeBackgroundColor({ color: '#000'});
+        chrome.browserAction.setBadgeText({text: 'play'});        
     },
     
     saveEntityWorklog: function(idx, id, ent, action){
@@ -213,7 +201,7 @@ var handlers = {
                 case 'Grp':
                     eid = n.groupname;
                     break;
-                default:
+                default: //для данных из localStorage
                     eid = n.ID;
             }
 
@@ -234,7 +222,7 @@ var handlers = {
 
     addEntity: function(ent, idx, data){
         data.worktime = ent === 'Nte' ? data.Time : undefined;
-        data.condition = ent === 'Req' ? 'Запросы' : ent === 'Tsk' ? 'Задачи' : ent === 'Tck' ? 'Тикеты' : 'Заметки';
+        data.condition = constants.entityDictionary[ent][1];
         data.actions = initiators.initBtn(ent, 'play', idx + 1, 'В работу');
         $('#jqGrid' + ent).jqGrid('addRowData', idx + 1, data);
     },
@@ -244,7 +232,7 @@ var handlers = {
         var ids = $('#jqGrid' + ent).jqGrid('getGridParam', 'records');
 
         data.worktime = (new Date()).getTime() - (new Date(active)).getTime();
-        data.condition = (ent === 'Req' ? 'Запрос' : ent === 'Tsk' ? 'Задача' : ent === 'Tck' ? 'Тикет' : 'Заметка') + ' в работе';
+        data.condition = constants.entityDictionary[ent][0] + ' в работе';
         data.actions = initiators.initBtn(ent, 'pause', ids + 1, 'Приостановить')
                         + initiators.initBtn(ent, 'stop', ids + 1, 'Завершить')
                         + initiators.initBtn(ent, 'save', ids + 1, 'С комментарием');
@@ -256,18 +244,18 @@ var handlers = {
     updateEntity: function(ent, id, active) {
         debugger;
         var jqData = $('#jqGrid' + ent).jqGrid('getGridParam', 'data');
-        var entOb = handlers.findEntityById(ent, jqData, id);
+        var entOb = handlers.findEntityById(ent, jqData, id)[0];
         var lsCurEnt = localStorage['curEnt'] ? JSON.parse(localStorage['curEnt']) : null;
         var curEntId = (lsCurEnt && lsCurEnt.ent === ent) ? lsCurEnt.eid : undefined;
 
-        entOb[0].worktime = active;
-        entOb[0].condition = curEntId == id
-                            ? ((ent === 'Req' ? 'Запрос' : ent === 'Tsk' ? 'Задача' : ent === 'Tck' ? 'Тикет' : 'Заметка') + ' в работе')
-                            : (ent === 'Req' ? 'Запросы' : ent === 'Tsk' ? 'Задачи' : ent === 'Tck' ? 'Тикеты' : 'Заметки');
-        entOb[0].actions = curEntId == id ? (initiators.initBtn(ent, 'pause', entOb[0].jqId, 'Приостановить') +
-                            initiators.initBtn(ent, 'stop', entOb[0].jqId, 'Завершить') +
-                            initiators.initBtn(ent, 'save', entOb[0].jqId, 'С комментарием')) : initiators.initBtn(ent, 'play', entOb[0].jqId, 'В работу');
-
+        entOb.worktime = active;
+        entOb.condition = curEntId == id
+                            ? constants.entityDictionary[ent][0] + ' в работе'
+                            : constants.entityDictionary[ent][1];
+        entOb.actions = curEntId == id ? (initiators.initBtn(ent, 'pause', entOb.jqId, 'Приостановить') +
+                            initiators.initBtn(ent, 'stop', entOb.jqId, 'Завершить') +
+                            initiators.initBtn(ent, 'save', entOb.jqId, 'С комментарием')) : initiators.initBtn(ent, 'play', entOb.jqId, 'В работу');
+        
         $('#jqGrid' + ent).trigger('reloadGrid');
     },
 

@@ -35,7 +35,7 @@ $(document).ready(function () {
 
             if(entLimit && entLimit.checked) {
                 initiators.initEntConstants(entUp, entLimit);
-                initiators.initEntGrid(entUp);                
+                initiators.initEntGrid(entUp);
             }
             else {
                 $(el.parentElement).remove();

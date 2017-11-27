@@ -109,6 +109,16 @@ var getters = {
                 callback(handlers.formSelectData(JSON.stringify(response), 'name').replace('<select>', '').replace('</select>', ''));
             }
         });
+    },
+
+    getByUrl: function(url, callback){
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(response) {
+                callback(response);
+            }
+        });
     }
 };
 
@@ -162,9 +172,18 @@ var initiators = {
         );
         
         $.each(navGrids[ent].custBtn, function(idx, el) {
-            $('#jqGrid' + ent).navButtonAdd('#jqGrid' + ent + 'Pager', el);
-        });        
-                
+            el.type === 'separator'
+                ? $('#jqGrid' + ent).navSeparatorAdd('#jqGrid' + ent + 'Pager')
+                : $('#jqGrid' + ent).navButtonAdd('#jqGrid' + ent + 'Pager', el);
+
+            if(el.type === 'select' && $.isFunction(el.onBtnAdded))
+                el.onBtnAdded($('#' + el.id).find('select'));
+        });
+
+        //$('#jqGrid' + ent).contextMenu('contextMenu', {
+        //
+        //});
+            
         getters.getEnts(ent, function (parsedData) {
             $(parsedData).each(function (idx, el) {                
                 handlers.addEntity(ent, idx, el);
@@ -259,13 +278,18 @@ var initiators = {
                 constants.sdpTskInputData.list_info.row_count = entLimit.limit;
                 constants.sdpTskInputData.tasks.filter = entLimit.filter;
                 break;     
-            case 'Tck':                                
-                constants.jraTckInputData += entLimit.my ? ('assignee=' + localStorage['jraUser']) : '';
-                constants.jraTckInputData += entLimit.filter !== '' ? ((constants.jraTckInputData ? '%20and%20' : '') + 'project=' + entLimit.filter) : '';
-                constants.jraTckInputData += entLimit.opnSpr ? ((constants.jraTckInputData ? '%20and%20' : '') + 'Спринт%20in%20openSprints()' ) : '';
-                constants.jraTckInputData += (constants.jraTckInputData ? '%20and%20' : '') + 'resolution=Unresolved';
-                constants.jraTckInputData += '&maxResults=' + entLimit.limit;
-                break;           
+            case 'Tck':         
+                if(!entLimit.flt){
+                    constants.jraTckInputData = entLimit.my ? ('assignee=' + localStorage['jraUser']) : '';
+                    constants.jraTckInputData += entLimit.filter !== '' ? ((constants.jraTckInputData ? '%20and%20' : '') + 'project=' + entLimit.filter) : '';
+                    constants.jraTckInputData += entLimit.opnSpr ? ((constants.jraTckInputData ? '%20and%20' : '') + 'Спринт%20in%20openSprints()' ) : '';
+                    constants.jraTckInputData += (constants.jraTckInputData ? '%20and%20' : '') + 'resolution=Unresolved';
+                    constants.jraTckInputData += '&maxResults=' + entLimit.limit;
+                    break;                               
+                }
+
+                constants.jraTckInputData = 'filter=' + entLimit.filter;
+                break;
         }
     },
 
@@ -281,5 +305,20 @@ var initiators = {
                 $('#worklogTmpltVal').append($(new Option(el.value, el.name))); 
             });        
         }        
+    },
+
+    initTabBadge: function(ent){
+        var jqData = $('#jqGrid' + ent).jqGrid('getGridParam', 'data');
+        var badge = $('a[href="#' + ent.replace(ent[0], ent[0].toLowerCase()) + '"]').find('span');
+        var lsCurEnt = localStorage['curEnt'] ? JSON.parse(localStorage['curEnt']) : null;               
+        
+        badge.text(jqData.length);
+        if(lsCurEnt && lsCurEnt.ent === ent){
+            var rowObject = handlers.findEntityById(ent, jqData, lsCurEnt.eid)[0];
+            badge.append(' / '
+                + lsCurEnt.eid
+                + ' '
+                + formatter.workTimeFormatter(rowObject ? rowObject.worktime : undefined, { gid: 'tabBadge' }, rowObject));
+        }
     }
 };

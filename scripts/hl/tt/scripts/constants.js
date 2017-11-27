@@ -29,14 +29,22 @@ var constants = {
     jraTcksApiUrl   : baseUrl.jira + 'rest/api/2/search?jql=',
     jraTckApiUrl    : baseUrl.jira + 'rest/api/2/issue/',
     jraPrjApiUrl    : baseUrl.jira + 'rest/api/2/project',
+    jraFltApiUrl    : baseUrl.jira + 'rest/api/2/filter/favourite',
     jraTckLinkUrl   : baseUrl.jira + 'browse/',
     jraTckInputData : '',
     jraTckLoadField : '&fields=id,key,summary,status,priority',
 
-    notification: { type: 'basic', iconUrl: 'images/icon128.png', requireInteraction: true, isClickable: true },
-    commentTemplate: [
+    notification    : { type: 'basic', iconUrl: 'images/icon128.png', requireInteraction: true, isClickable: true },
+    commentTemplate : [
         { name:'Доработка', value:'Реализация доработки' },
         { name:'Код-ревью', value:'Выполнение ревью кода по проекту' },
         { name:'Перенос на предпрод', value:'Выполнение переноса проекта на ПредПрод' }
-    ]
+    ],
+
+    entityDictionary: {
+        Req: [ 'Заявка', 'Заявки' ],
+        Tsk: [ 'Задача', 'Задачи' ],
+        Tck: [ 'Тикет', 'Тикеты' ],
+        Nte: [ 'Заметка', 'Заметки' ]
+    }
 };

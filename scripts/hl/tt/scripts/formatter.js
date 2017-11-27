@@ -23,7 +23,9 @@ var formatter = {
             var lsCurEnt = localStorage['curEnt'] ? JSON.parse(localStorage['curEnt']) : null;
             if(!lsCurEnt || lsCurEnt.ent !== ent || lsCurEnt.eid != rowObject.ID)
                 return time;
-        }            
+        }
+        else if(ent === 'tabBadge')
+            return time;
 
         return '<input type="button" id="' + 'down_' + ent + '_' + rowObject.jqId +'" class="worktime" value="-" title="-5 мин">'
                 + '  ' + time + '  '
@@ -33,8 +35,8 @@ var formatter = {
     reqSubjectFormatter: function (cellvalue, options, rowObject) {        
         return '<a href="' + constants.sdpReqLinkUrl + rowObject.workorderid + '" id="' + rowObject.workorderid
             + '" target="_blank" data-toggle="tooltip" data-html="true" data-placement="auto" title="'
-            + cellvalue.replace(/\'/g, '') + '">'
-            + cellvalue.replace(/\'/g, '')
+            + cellvalue.replace(/[\'\\{2,}]+/g, '').replace(/\"/g, "'") + '">'
+            + cellvalue.replace(/[\'\\{2,}]+/g, '')
             + '</a>';
     },
 

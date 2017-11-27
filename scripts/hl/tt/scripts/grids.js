@@ -109,7 +109,7 @@ var grids = {
         //onSelectRow: function() { $('#jqGridReq').resetSelection(); },
         loadComplete: function(data) {  
             initiators.initBtnAction('Req');
-            $('a[href="#req"]').find('span').text(data.records);
+            initiators.initTabBadge('Req');
             $('[data-toggle=tooltip]').tooltip({ container: 'body' });
         }
     },
@@ -142,7 +142,7 @@ var grids = {
         onSelectRow: function () { $('#jqGridTsk').resetSelection(); },
         loadComplete: function (data) {
             initiators.initBtnAction('Tsk');
-            $('a[href="#tsk"]').find('span').text(data.records);
+            initiators.initTabBadge('Tsk');
             $('[data-toggle=tooltip]').tooltip({container: 'body'});
         }
     },
@@ -165,8 +165,14 @@ var grids = {
             id: 'jqId'
         },
         colModel: [
-            { label: 'ID', name: 'eid', jsonmap: 'key', title: false, width: 55, align: 'center', search: true, searchoptions: { sopt: [ 'eq' ] } },
-            { label: 'Название', name: 'subject', jsonmap: 'fields.summary', title: false, width: 340, formatter: formatter.tckTitleFormatter, unformat: unformatter.titleUnformatter, search: false },
+            {
+                label: 'ID', name: 'eid', jsonmap: 'key', title: false, width: 75, align: 'center', search: true, searchoptions: { sopt: [ 'eq' ],
+                dataInit: function(el){
+                    var filter = JSON.parse(localStorage['tckLimit']).filter;
+                    $(el).val(filter.length > 0 ? filter + '-' : '');
+                }} 
+            },
+            { label: 'Название', name: 'subject', jsonmap: 'fields.summary', title: false, width: 320, formatter: formatter.tckTitleFormatter, unformat: unformatter.titleUnformatter, search: false },
             { label: 'Статус', name: 'fields.status.name', title: false, width: 110, sortable: true, search: false },
             { label: ' ', name: 'fields.priority.id', title: false, width: 30, align: 'center', sortable: true, search: false, formatter: formatter.tckPriorityFormatter },
             { label: 'Счётчик', name: 'worktime', title: false, width: 110, align: 'center', formatter: formatter.workTimeFormatter, search: false },
@@ -177,7 +183,7 @@ var grids = {
         onSelectRow: function () { $('#jqGridTck').resetSelection(); },
         loadComplete: function (data) {
             initiators.initBtnAction('Tck');
-            $('a[href="#tck"]').find('span').text(data.records);
+            initiators.initTabBadge('Tck');
             $('[data-toggle=tooltip]').tooltip({container: 'body'});
         }
     },
@@ -227,7 +233,7 @@ var grids = {
         loadComplete: function (data) {
             debugger;
             initiators.initBtnAction('Nte');
-            $('a[href="#nte"]').find('span').text(data.records);
+            initiators.initTabBadge('Nte');
             $('[data-toggle=tooltip]').tooltip({container: 'body'});
         }
     }
@@ -852,7 +858,30 @@ var navGrids = {
         editOpts: { },
         addOpts: { },
         delOpts: { },
-        custBtn: [ ]
+        custBtn: [
+            { type: 'separator' },
+            {
+                id: 'tckFavFlt',
+                type: 'select',                
+                caption: '<select class="ui-pg-selbox" style="background-color:transparent; width: 120px"><option value="-1">По умолчанию</option></select>',
+                title: 'Избранные фильтры',
+                buttonicon: 'none',
+                onBtnAdded: function(elem){
+                    getters.getByUrl(constants.jraFltApiUrl, function(data){
+                        $(data).each(function(idx, el){
+                            $(elem).append($(new Option(el.name, el.id)));
+                        });
+
+                        $(elem).on('change', function(){
+                            var filter = $(this).find(':selected').val();
+                            var entLimit = filter != '-1' ? { flt: true, filter: filter } : JSON.parse(localStorage['tckLimit']);
+                            initiators.initEntConstants('Tck', entLimit);
+                            navGrids['Tck'].props.beforeRefresh();
+                        });
+                    });
+                }
+            }
+        ]
     },
     Nte: {        
         props: {
