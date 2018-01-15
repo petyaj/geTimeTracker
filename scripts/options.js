@@ -40,6 +40,12 @@ $(document).ready(function(){
     $('#defTab_' + defTab).prop('checked', true);
     $('#chLastTab').prop('checked', localStorage['lastTab'] && localStorage['lastTab'] !== 'undefined');
 
+    var notice = localStorage['notice'] ? JSON.parse(localStorage['notice']) : null;
+    $('#ntcLimit').attr('disabled', !(notice && notice.checked)).val(notice ? notice.period : '');
+    $('#chCur').prop('checked', notice ? notice.checked : null).on('change', function(){
+        $('#ntcLimit').attr('disabled', !this.checked);
+    });
+
     $('#saveBtn').on('click', function(){        
         tabs = [];
         $('#sortable li').each(function(idx, el){     
@@ -65,25 +71,24 @@ $(document).ready(function(){
         localStorage['tabs']        =   JSON.stringify(tabs);
     });
 
-    function getEntFilters(ent, callback) {
-        $.ajax({
-            url: ent === 'Req' ? constants.sdpReqsApiUrl + '/filters?format=json&TECHNICIAN_KEY=' + localStorage['techKey'] : constants.jraPrjApiUrl,
-            type: 'GET',
-            beforeSend: function(xhr) {
-                if(ent === 'Tck')
-                    xhr.setRequestHeader('Authorization', 'Basic ' + localStorage['jraBase']);
-            },
-            success: function(response) {
-                var parsedData = ent === 'Tck' ? { operation: { details: response, result: { status: 'Success' } } } : response;
-                $('#' + ent.replace(ent[0], ent[0].toLowerCase()) + 'Filter')
-                    .append(handlers.formSelectData(JSON.stringify(parsedData)
-                                                    , ent === 'Tck' ? 'name' : 'displayvalue'
-                                                    , ent === 'Tck' ? 'key' : 'viewid'
-                                                    , ent === 'Tck' ? '' : 'viewname').replace('<select>', '').replace('</select>', ''));
-                callback();
-            }
-        });
-    };
+    $('#saveNtc').on('click', function(){
+        var curNtc = { checked: $('#chCur')[0].checked, period: $('#ntcLimit').val() };
+        var alarms = localStorage['alarms'] ? JSON.parse(localStorage['alarms']) : [];
+        var alarm = handlers.findEntityById('alarms', alarms, constants.alarms[0])[0];        
+        debugger;
+        if(curNtc.checked && localStorage['curEnt']){
+            if(!alarm)
+                alarms.push({ name: constants.alarms[0], changed: true });            
+            else if(!notice || (notice.period !== curNtc.period))                
+                alarm.changed = true;
+        }
+        else{
+            alarms.splice(alarm);
+        }
+        
+        localStorage['notice'] = JSON.stringify(curNtc);
+        localStorage['alarms'] = JSON.stringify(alarms);
+    });
 
     $('#jraBase').on('focus', function(){
         if(!$(this).val())
@@ -116,6 +121,29 @@ $(document).ready(function(){
     $('#sortable').disableSelection();
 
     $('#version').text('Ver ' + chrome.runtime.getManifest().version);
+    
+    initiators.initSheduleTable($('#schedule_table'));     
+    $('.schedule').selectable();    
 
     $.material.init();
-})
+});
+
+function getEntFilters(ent, callback) {
+    $.ajax({
+        url: ent === 'Req' ? constants.sdpReqsApiUrl + '/filters?format=json&TECHNICIAN_KEY=' + localStorage['techKey'] : constants.jraPrjApiUrl,
+        type: 'GET',
+        beforeSend: function(xhr) {
+            if(ent === 'Tck')
+                xhr.setRequestHeader('Authorization', 'Basic ' + localStorage['jraBase']);
+        },
+        success: function(response) {
+            var parsedData = ent === 'Tck' ? { operation: { details: response, result: { status: 'Success' } } } : response;
+            $('#' + ent.replace(ent[0], ent[0].toLowerCase()) + 'Filter')
+                .append(handlers.formSelectData(JSON.stringify(parsedData)
+                                                , ent === 'Tck' ? 'name' : 'displayvalue'
+                                                , ent === 'Tck' ? 'key' : 'viewid'
+                                                , ent === 'Tck' ? '' : 'viewname').replace('<select>', '').replace('</select>', ''));
+            callback();
+        }
+    });
+};

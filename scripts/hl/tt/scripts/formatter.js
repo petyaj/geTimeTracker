@@ -28,41 +28,50 @@ var formatter = {
             return time;
 
         return '<input type="button" id="' + 'down_' + ent + '_' + rowObject.jqId +'" class="worktime" value="-" title="-5 мин">'
-                + '  ' + time + '  '
-                + '<input type="button" id="' + 'up_' + ent + '_' + rowObject.jqId + '" class="worktime" value="+" title="+5 мин">';
+            + '  ' + time + '  '
+            + '<input type="button" id="' + 'up_' + ent + '_' + rowObject.jqId + '" class="worktime" value="+" title="+5 мин">';
+    },
+
+    entFavouriteFormatter: function (cellvalue, options, rowObject) {
+        var ent = options.gid.replace('jqGrid','');
+        return '<span id="' + 'fav' + '_' + ent + '_' + options.rowId
+            + '" class="glyphicon glyphicon-star' + (cellvalue ? '' : '-empty')
+            + '" style="cursor:pointer' + (cellvalue ? ';color:orange' : '') + '" title="'
+            + (cellvalue ? 'Убрать из избранного' : 'Добавить в избранное')
+            + '"></span>';
     },
 
     reqSubjectFormatter: function (cellvalue, options, rowObject) {        
         return '<a href="' + constants.sdpReqLinkUrl + rowObject.workorderid + '" id="' + rowObject.workorderid
             + '" target="_blank" data-toggle="tooltip" data-html="true" data-placement="auto" title="'
-            + cellvalue.replace(/[\'\\{2,}]+/g, '').replace(/\"/g, "'") + '">'
-            + cellvalue.replace(/[\'\\{2,}]+/g, '')
+            + cellvalue.replace(/[\'\\{,}]+/g, '').replace(/\"/g, "'") + '">'
+            + cellvalue.replace(/[\'\\{,}]+/g, '')
             + '</a>';
     },
 
     tskTitleFormatter: function (cellvalue, options, rowObject) {
         return '<a href="' + constants.sdpTskLinkUrl + rowObject.id + '" id="' + rowObject.id
-        + '" target="_blank" data-toggle="tooltip" data-html="true" data-placement="auto" title="'
-        + cellvalue.replace(/\\/g, '').replace(/"/, '') + '">'
-        + cellvalue.replace(/\\/g, '')
-        + '</a>';
+            + '" target="_blank" data-toggle="tooltip" data-html="true" data-placement="auto" title="'
+            + cellvalue.replace(/\\/g, '').replace(/"/, '') + '">'
+            + cellvalue.replace(/\\/g, '')
+            + '</a>';
     },
 
     tckTitleFormatter: function (cellvalue, options, rowObject) {
         return '<a href="' + constants.jraTckLinkUrl + rowObject.key + '" id="' + rowObject.key
-        + '" target="_blank" data-toggle="tooltip" data-html="true" data-placement="auto" title="'
-        + cellvalue.replace(/\\/g, '').replace(/"/, '') + '">'
-        + cellvalue.replace(/\\/g, '')
-        + '</a>';
+            + '" target="_blank" data-toggle="tooltip" data-html="true" data-placement="auto" title="'
+            + cellvalue.replace(/\\/g, '').replace(/"/, '') + '">'
+            + cellvalue.replace(/\\/g, '')
+            + '</a>';
     },
 
     nteTitleFormatter: function (cellvalue, options, rowObject) {
         debugger;
         return '<a href="#" id="0' + rowObject.ID
-        + '" data-toggle="tooltip" data-html="true" data-placement="auto" title="'
-        + cellvalue.replace(/\\/g, '').replace(/"/, '') + '">'
-        + cellvalue.replace(/\\/g, '')
-        + '</a>';
+            + '" data-toggle="tooltip" data-html="true" data-placement="auto" title="'
+            + cellvalue.replace(/\\/g, '').replace(/"/, '') + '">'
+            + cellvalue.replace(/\\/g, '')
+            + '</a>';
     },
 
     tckPriorityFormatter: function(cellvalue, options, rowObject) {

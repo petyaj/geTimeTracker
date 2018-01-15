@@ -134,42 +134,121 @@ var initiators = {
                 });
 
                 $('#jqGrid' + ent).trigger('reloadGrid');
-                initiators.initCurEnt(ent);
+                initiators.initCurEnt(ent, function(){
+                    initiators.initFavEnt(ent);
+                });
             });
         };
 
-        $('#jqGrid' + ent).jqGrid(grids[ent]).navGrid('#jqGrid' + ent + 'Pager', 
-        navGrids[ent].props,                    
-        navGrids[ent].editOpts,
-        navGrids[ent].addOpts,
-        navGrids[ent].delOpts,
-        { //searchOptions
-            top:25, left:141, closeAfterSearch: true, closeAfterReset: true,
-            searchOnEnter: true,
-            onSearch: function () {
-                var postData = $('#jqGrid' + ent).jqGrid('getGridParam', 'postData');
-                $('#jqGrid' + ent).clearGridData();
-                getters.getEnt(ent, postData.searchString, function(parsedData){
-                    if(parsedData !== undefined)
-                        handlers.addEntity(ent, 0, parsedData);
+        $('#jqGrid' + ent).jqGrid(grids[ent])
+            .navGrid('#jqGrid' + ent + 'Pager',
+                navGrids[ent].props,                    
+                navGrids[ent].editOpts,
+                navGrids[ent].addOpts,
+                navGrids[ent].delOpts,
+                { //searchOptions
+                    top:25, left:141, closeAfterSearch: true, closeAfterReset: true,
+                    searchOnEnter: true,
+                    onSearch: function () {
+                        var postData = $('#jqGrid' + ent).jqGrid('getGridParam', 'postData');
+                        $('#jqGrid' + ent).clearGridData();
+                        getters.getEnt(ent, postData.searchString, function(parsedData){
+                            if(parsedData !== undefined)
+                                handlers.addEntity(ent, 0, parsedData);
+                            
+                                debugger;
+                            $('#jqGrid' + ent).trigger('reloadGrid');
+                            initiators.initCurEnt(ent, function(){
+                                initiators.initFavEnt(ent);
+                            });                            
+                        });                        
+                    },
+                    onReset: function(){
+                        $('#jqGrid' + ent).clearGridData();
+                        getters.getEnts(ent, function (parsedData) {
+                            $(parsedData).each(function (idx, el) {                        
+                                handlers.addEntity(ent, idx, el);
+                            });
 
-                    $('#jqGrid' + ent).trigger('reloadGrid');
-                    initiators.initCurEnt(ent);
-                });
-            },
-            onReset: function(){
-                $('#jqGrid' + ent).clearGridData();
-                getters.getEnts(ent, function (parsedData) {
-                    $(parsedData).each(function (idx, el) {                        
-                        handlers.addEntity(ent, idx, el);
-                    });
+                            $('#jqGrid' + ent).trigger('reloadGrid');
+                            initiators.initCurEnt(ent, function(){
+                                initiators.initFavEnt(ent);
+                            });
+                        });
+                    }
+                })
+            .contextMenu({
+                selector: '.jqgrow',
+                build: function($t, e){
+                    debugger;
+                    var $tr = $(e.target).closest('tr.jqgrow'),
+                        rowId = $tr.attr('id'),
+                        item = $('#jqGrid' + ent).jqGrid('getRowData', rowId),
+                        lsCurEnt = localStorage['curEnt'] ? JSON.parse(localStorage['curEnt']) : null,
+                        favEnts = localStorage['fav' + ent] ? JSON.parse(localStorage['fav' + ent]) : [];
+                        isFav = (favEnts).indexOf(item.eid) > -1;
 
-                    $('#jqGrid' + ent).trigger('reloadGrid');
-                    initiators.initCurEnt(ent);
-                });
-            }
-        }
-        );
+                    $('#jqGrid' + ent).jqGrid('setSelection', rowId);                    
+                
+                    if(lsCurEnt && lsCurEnt.eid === item.eid){
+                        return {
+                            items: $.extend({}, {
+                                pause: { name: 'Приостановить', icon: 'pause' },
+                                stop: { name: 'Завершить', icon: 'stop' },
+                                save: { name: 'С комментарием', icon: 'save'},
+                                sep: '-',
+                                fav: { name: (isFav ? 'Убрать из избранного' : 'Добавить в избранное'), icon: (isFav ? 'star-empty' : 'star') }
+                            }, cntxtMenu[ent].items || {}),
+                            callback: function(key, options){
+                                debugger;
+                                switch(key){
+                                    case 'pause':
+                                    case 'stop':
+                                        handlers.saveEntityWorklog(rowId, item.eid, ent, key);
+                                        break;
+                                    case 'save':
+                                        $('#modal').modal();
+                                        initiators.initCommentTemplates();
+                                        $('#saveWorklog').unbind('click').on('click', function(){
+                                            handlers.saveEntityWorklog(rowId, item.eid, ent, 'save');
+                    
+                                            if($('#chSaveTmplt').prop('checked'))
+                                                handlers.saveWorklogTemplate($('#worklogTmplt').val(), $('#worklogComment').val());
+                                        });                
+                                        break;
+                                    case 'fav':
+                                        var curEnt = handlers.findEntityById('', JSON.parse(localStorage[ent + 's']), item.eid)[0];
+                                        isFav ? favEnts.splice(favEnts.indexOf(item.eid), 1) : favEnts.push(item.eid);
+                                        localStorage['fav' + ent] = JSON.stringify(favEnts);
+                                        handlers.updateEntity(ent, item.eid, (new Date()).getTime() - (new Date(curEnt.Active)).getTime() + (ent === 'Nte' ? curEnt.Time : 0), !isFav);
+                                        break;                                        
+                                }
+                            }                            
+                        }
+                    }else{
+                        return {
+                            items: $.extend({}, {
+                                play: { name: 'В работу', icon: 'play'},
+                                sep: '-',
+                                fav: { name: isFav ? 'Убрать из избранного' : 'Добавить в избранное', icon: isFav ? 'star-empty' : 'star' }
+                            }, cntxtMenu[ent].items || {}),
+                            callback: function(key, options){
+                                debugger;
+                                switch(key){
+                                    case 'play':
+                                        handlers.setEntityInProgress(rowId, item.eid, ent);
+                                        break;
+                                    case 'fav':
+                                        isFav ? favEnts.splice(favEnts.indexOf(item.eid), 1) : favEnts.push(item.eid);
+                                        localStorage['fav' + ent] = JSON.stringify(favEnts);
+                                        handlers.updateEntity(ent, item.eid, undefined, !isFav);                                            
+                                        break;                                        
+                                }
+                            }                            
+                        }
+                    }
+                }
+            });
         
         $.each(navGrids[ent].custBtn, function(idx, el) {
             el.type === 'separator'
@@ -179,26 +258,23 @@ var initiators = {
             if(el.type === 'select' && $.isFunction(el.onBtnAdded))
                 el.onBtnAdded($('#' + el.id).find('select'));
         });
-
-        //$('#jqGrid' + ent).contextMenu('contextMenu', {
-        //
-        //});
-            
+           
         getters.getEnts(ent, function (parsedData) {
             $(parsedData).each(function (idx, el) {                
                 handlers.addEntity(ent, idx, el);
             });
 
             $('#jqGrid' + ent).trigger('reloadGrid');
-            initiators.initCurEnt(ent);
+            initiators.initCurEnt(ent, function(){
+                initiators.initFavEnt(ent);
+            });
         });
     },
 
-    initCurEnt: function (ent) {
+    initCurEnt: function (ent, callback) {
         debugger;
         var lsCurEnt = localStorage['curEnt'] ? JSON.parse(localStorage['curEnt']) : null;
-        if(lsCurEnt && lsCurEnt.ent === ent)
-        {
+        if (lsCurEnt && lsCurEnt.ent === ent) {
             var grid = '#jqGrid' + ent;
             var ids = $(grid).jqGrid('getGridParam', 'records');
 
@@ -207,17 +283,51 @@ var initiators = {
                 if(entOb.length){
                     var ents = JSON.parse(localStorage[ent + 's']);
                     var curEnt = handlers.findEntityById('', ents, lsCurEnt.eid)[0];
-                    handlers.updateEntity(ent, curEnt.ID, (new Date()).getTime() - (new Date(curEnt.Active)).getTime() + (ent === 'Nte' ? curEnt.Time : 0));                    
-                    return;
+                    handlers.updateEntity(ent, curEnt.ID, (new Date()).getTime() - (new Date(curEnt.Active)).getTime() + (ent === 'Nte' ? curEnt.Time : 0));
+                    if(callback)
+                        return callback();
+                    return;                        
                 }                
             }
 
             getters.getEnt(ent, lsCurEnt.eid, function (parsedData) {
                 var ents = JSON.parse(localStorage[ent + 's']);
                 var entOb = handlers.findEntityById('', ents, lsCurEnt.eid)[0];
-                handlers.addCurrentEntity(ent, parsedData, entOb.Active);                
-            });            
+                handlers.addCurrentEntity(ent, parsedData, entOb.Active);
+                if(callback)
+                    callback();
+            });
         }
+        else if(callback){
+            callback();
+        }
+    },
+
+    initFavEnt: function (ent) {
+        debugger;
+        var lsFavEnt = localStorage['fav' + ent] ? JSON.parse(localStorage['fav' + ent]) : [];
+        var lsCurEnt = localStorage['curEnt'] ? JSON.parse(localStorage['curEnt']) : null;
+        var data = $('#jqGrid' + ent).jqGrid('getGridParam', 'data');
+        
+        $.each(lsFavEnt, function(idx, el){
+            debugger;
+            var entOb = handlers.findEntityById(ent, data, el);
+            if(entOb.length){
+                if(lsCurEnt && lsCurEnt.ent === ent && lsCurEnt.eid === el){
+                    var curEnt = handlers.findEntityById('', JSON.parse(localStorage[ent + 's']), el)[0];
+                    handlers.updateEntity(ent, el, (new Date()).getTime() - (new Date(curEnt.Active)).getTime() + (ent === 'Nte' ? curEnt.Time : 0), true);
+                }
+                else{
+                    handlers.updateEntity(ent, el, undefined, true);
+                }                
+            }
+            else {                
+                getters.getEnt(ent, el, function(parsedData){
+                    debugger;
+                    handlers.addFavouriteEntity(ent, parsedData);
+                });
+            }
+        });
     },
 
     initBtn: function (ent, action, idx, title) {
@@ -232,8 +342,8 @@ var initiators = {
     },
 
     initBtnAction: function (ent) {
-        $('#jqGrid'+ ent + ' input.play-btn').on('click', function() {
-            debugger;            
+        $('#jqGrid'+ ent + ' input.play-btn, #jqGrid' + ent + ' span.glyphicon').on('click', function() {
+            debugger;
             var btnType = this.id.split('_')[0];
             var idx = this.id.split('_')[2];
             var id = $('#jqGrid' + ent).jqGrid('getRowData', idx).eid;
@@ -248,12 +358,27 @@ var initiators = {
                     break;
                 case 'save':
                     initiators.initCommentTemplates();
-                    $('#saveWorklog').on('click', function() {
+                    $('#saveWorklog').unbind('click').on('click', function() {
                         handlers.saveEntityWorklog(idx, id, ent, btnType);
                         
                         if($('#chSaveTmplt').prop('checked'))
                             handlers.saveWorklogTemplate($('#worklogTmplt').val(), $('#worklogComment').val());
                     });
+                    break;
+                case 'fav':
+                    var favEnts = localStorage['fav' + ent] ? JSON.parse(localStorage['fav' + ent]) : [];                    
+                    var lsCurEnt = localStorage['curEnt'] ? JSON.parse(localStorage['curEnt']) : null;
+                    var isFav = favEnts.indexOf(id) > -1;
+                    
+                    isFav ? favEnts.splice(favEnts.indexOf(id), 1) : favEnts.push(id);
+                    localStorage['fav' + ent] = JSON.stringify(favEnts);
+                    if(lsCurEnt && lsCurEnt.ent === ent && lsCurEnt.eid === id){
+                        var curEnt = handlers.findEntityById('', JSON.parse(localStorage[ent + 's']), id)[0];
+                        handlers.updateEntity(ent, id, (new Date()).getTime() - (new Date(curEnt.Active)).getTime() + (ent === 'Nte' ? curEnt.Time : 0), !isFav);
+                    }
+                    else{
+                        handlers.updateEntity(ent, id, undefined, !isFav);
+                    }                                        
                     break;                    
             }            
         });
@@ -320,5 +445,32 @@ var initiators = {
                 + ' '
                 + formatter.workTimeFormatter(rowObject ? rowObject.worktime : undefined, { gid: 'tabBadge' }, rowObject));
         }
+    },
+
+    initSheduleTable(table){
+        var header = $('<thead/>', { class: 'header' });
+        var body = $('<tbody/>', { class: 'body' });
+    
+        $('<tr/>').appendTo(header);
+        $('<th/>').appendTo(header.find('tr'));
+        $('<th/>').appendTo(header.find('tr'));
+        for(var i = 0; i < 24; i++){
+            $('<div/>', { style: 'width:' + 100 / 24 + '%' }).append(i).appendTo($(header.find('th')[1]));
+        }    
+        
+        $.each(constants.daysOfWeek, function(idx, el){
+            $('<tr/>').appendTo(body);
+            $('<td/>').append(el).appendTo(body.find('tr')[idx]);
+            $('<td/>').append($('<ul/>', { class: 'schedule' })).appendTo(body.find('tr')[idx]);
+        });
+    
+        $(body.find('tr')[0]).appendTo(body);
+    
+        for(var i = 0; i < 48; i++){
+            $('<li/>', { style: 'width:' + 100 / 48 + '%' }).appendTo(body.find('.schedule'));
+        }
+        
+        header.appendTo(table);
+        body.appendTo(table);    
     }
 };

@@ -2,42 +2,43 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title></title>
+        <title>HighLevel TimeTracking</title>
         <!--styles-->
         <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css">
         <link rel="stylesheet" href="css/bootstrap/bootstrap-theme.min.css">        
         <link rel="stylesheet" href="css/bootstrap/bootstrap-material-design.min.css">
         <link rel="stylesheet" href="css/bootstrap/ripples.min.css">
         <link rel="stylesheet" href="css/jqgrid/ui.jqgrid.css">
+        <link rel="stylesheet" href="css/jqgrid/jquery.contextMenu.min.css">
         <link rel="stylesheet" href="css/themes/base/jquery-ui.min.css">
         <link rel="stylesheet" href="css/themes/base/theme.css">
         <link rel="stylesheet" href="css/hl/tt/style/hl.ext.css">        
         <!--scripts-->
-        <script type="text/javascript" src="scripts/jquery/jquery-2.1.4.min.js"></script>
+        <script src="scripts/jquery/jquery-2.1.4.min.js"></script>
         <!--script type="text/javascript" src="scripts/jquery/jquery.js"></script-->            
-        <script type="text/javascript" src="scripts/jquery/jquery-ui.min.js"></script>
-        <script type="text/javascript" src="scripts/bootstrap/bootstrap.min.js"></script>
-        <script type="text/javascript" src="scripts/bootstrap/material.min.js"></script>
-        <script type="text/javascript" src="scripts/bootstrap/ripples.min.js"></script>
-        <script type="text/javascript" src="scripts/jqgrid/i18n/grid.locale-en.js"></script>
-        <script type="text/javascript" src="scripts/jqgrid/jquery.jqGrid.min.js"></script>
-        <!--script type="text/javascript" src="scripts/jqgrid/plugins/jquery.contextmenu.js"></script-->
+        <script src="scripts/jquery/jquery-ui.min.js"></script>
+        <script src="scripts/bootstrap/bootstrap.min.js"></script>
+        <script src="scripts/bootstrap/material.min.js"></script>
+        <script src="scripts/bootstrap/ripples.min.js"></script>
+        <script src="scripts/jqgrid/i18n/grid.locale-en.js"></script>
+        <script src="scripts/jqgrid/jquery.jqGrid.min.js"></script>
+        <script src="scripts/jqgrid/plugins/jquery.contextMenu.min.js"></script>
         <!--highlevel library-->
-        <script type="text/javascript" src="scripts/hl/tt/scripts/constants.js"></script>
-        <script type="text/javascript" src="scripts/hl/tt/scripts/formatter.js"></script>
-        <script type="text/javascript" src="scripts/hl/tt/scripts/handlers.js"></script>
-        <script type="text/javascript" src="scripts/hl/tt/scripts/services.js"></script>
-        <script type="text/javascript" src="scripts/hl/tt/scripts/grids.js"></script>        
+        <script src="scripts/hl/tt/scripts/constants.js"></script>
+        <script src="scripts/hl/tt/scripts/formatter.js"></script>
+        <script src="scripts/hl/tt/scripts/handlers.js"></script>
+        <script src="scripts/hl/tt/scripts/services.js"></script>
+        <script src="scripts/hl/tt/scripts/grids.js"></script>        
         <!--highlevel library-->
-        <script type="text/javascript" src="scripts/jquery/dateFormat.js"></script>
-        <script type="text/javascript" src="scripts/popup.js"></script>
+        <script src="scripts/jquery/dateFormat.js"></script>
+        <script src="scripts/popup.js"></script>
     </head>
     <body>
         <div class="container">
             <div class="panel panel-toolbar">
-                <a href="http://hl-servicedesk.sta.local/" target="_blank"><img class="logo" src="images/sd_logo_tr.png"></a>
-                <a href="http://h-level.ru/" target="_blank"><img class="logo hl-logo" src="images/hl_logo_tr.png"></a>
-                <a href="http://jira.sta.local:8080/" target="_blank"><img class="logo" src="images/jira_min.png"></a>
+                <a href="http://hl-servicedesk.sta.local/" target="_blank"><img class="logo" src="images/sd_logo_tr.png" alt="ServiceDesk Logo"></a>
+                <a href="http://h-level.ru/" target="_blank"><img class="logo hl-logo" src="images/hl_logo_tr.png" alt="HighLevel Logo"></a>
+                <a href="http://jira.sta.local:8080/" target="_blank"><img class="logo" src="images/jira_min.png" alt="Jira Logo"></a>
                 <button class="btn active align-right" id="setup"><span class="ui-icon ui-icon-gear"></span>Настройки</button>                
             </div>
             <div>
@@ -102,7 +103,7 @@
                                     <div class="form-group label-floating">
                                         <label class="control-label" for="projectId">Проект</label>
                                         <select class="form-control" id="projectId" name="projectId" required>
-                                            <option value="-1">--- Select Project ---</option>                                            
+                                            <option value="-1"></option>                                            
                                         </select>
                                     </div>
                                 </div>
@@ -110,7 +111,7 @@
                                     <div class="form-group label-floating">
                                         <label class="control-label" for="issueId">Тип запроса</label>
                                         <select class="form-control" id="issueId" name="issueId" required>
-                                            <option value="-1">--- Select Issue Type ---</option>
+                                            <option value="-1"></option>
                                         </select>
                                     </div>
                                 </div>                                
@@ -166,16 +167,6 @@
                 </div>
             </div>
             <p id="infoP" class="help-block"></p>
-        </div>
-        <!---->
-        <!-- Контекстное меню
-        <div class="contextMenu" id="contextMenu" style="display:none">
-            <ul style="width:300px; font-size:70%">
-                <li id="play">                    
-                    <span style="font-size:100%; font-family:Verdana">В работу</span>
-                </li>
-            </ul>
-        </div>
-        -->
+        </div>        
     </body>
 </html>

@@ -2,7 +2,7 @@
   "manifest_version": 2,
 
   "name": "HighLevel TimeTracking",
-  "version": "0.5.00",
+  "version": "0.5.03",
   "description": "Учет времени работы по сервисам HighLevel",
   "options_page": "options.html",
   "icons": {

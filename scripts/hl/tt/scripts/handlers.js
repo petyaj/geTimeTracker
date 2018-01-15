@@ -12,19 +12,21 @@ var handlers = {
         var ents = localStorage[ent + 's'] ? JSON.parse(localStorage[ent + 's']) : [];
         var entOb = handlers.findEntityById('', ents, id)[0];
         var subj = $('#jqGrid' + ent).jqGrid('getRowData', idx).subject;
+        var favEnts = localStorage['fav' + ent] ? JSON.parse(localStorage['fav' + ent]) : [];
+        var isFav = favEnts.indexOf(id) > -1;
 
         if(entOb){
             entOb.Active = now;
         }
         else {
-            entOb = { 
+            entOb = {
                 ID: id,
                 Active: now,
-                Stop: null,                    
+                Stop: null,
                 Time: null
             };
 
-            ents.push(entOb);                    
+            ents.push(entOb);
         }
 
         if(lsCurEnt){            
@@ -34,15 +36,16 @@ var handlers = {
             curEnt.Comment = null;
             handlers.createEntityWorklog(ent, curEnt, function(){
                 localStorage[ent + 's'] = JSON.stringify(ents);
-                handlers.updateEntity(ent, curEnt.ID, ent === 'Nte' ? curEnt.Time : undefined);
+                handlers.updateEntity(ent, curEnt.ID, ent === 'Nte' ? curEnt.Time : undefined, isFav);
 
                 chrome.notifications.clear(curEnt.ID.toString());
-            });           
+            });
         }
         
         localStorage['curEnt'] = JSON.stringify({ ent: ent, eid: entOb.ID });
         localStorage[ent + 's'] = JSON.stringify(ents);
-        handlers.updateEntity(ent, entOb.ID, ent === 'Nte' ? entOb.Time : 0);
+        localStorage['alarms'] = JSON.stringify([{ name: constants.alarms[0], changed: true }]);
+        handlers.updateEntity(ent, entOb.ID, ent === 'Nte' ? entOb.Time : 0, isFav);
 
         //Настройка бэйджа и push-уведомления
         constants.notification.title = 'Сейчас в работе ' + constants.entityDictionary[ent][0].toLowerCase() + ' №' + entOb.ID;
@@ -61,16 +64,27 @@ var handlers = {
         if(!entOb)
             return;
 
+        var favEnts = localStorage['fav' + ent] ? JSON.parse(localStorage['fav' + ent]) : [];
+        var isFav = favEnts.indexOf(id) > -1;
+
         debugger;
 
         entOb.Stop = now;
         entOb.Time = now.getTime() - (new Date(entOb.Active)).getTime() + (ent === 'Nte' ? entOb.Time : 0);
         entOb.Comment = action === 'save' ? $('#worklogComment').val() : null;
 
+        if(action === 'alarms'){
+            var notice = JSON.parse(localStorage['notice']);
+            entOb.Time -= parseInt(notice.period) * 60000;
+        }
+
         handlers.createEntityWorklog(ent, entOb, function(){
             delete localStorage['curEnt'];
-            localStorage[ent + 's'] = JSON.stringify(ents);            
-            handlers.updateEntity(ent, entOb.ID, ent === 'Nte' ? entOb.Time : undefined);
+            delete localStorage['alarms'];
+            localStorage[ent + 's'] = JSON.stringify(ents);
+            if(action !== 'alarms' && action !== 'no')
+                handlers.updateEntity(ent, entOb.ID, ent === 'Nte' ? entOb.Time : undefined, isFav);
+
             chrome.browserAction.setBadgeText({text: ''});
             chrome.browserAction.setBadgeBackgroundColor({color: '#000'})
             chrome.notifications.clear(entOb.ID.toString());   
@@ -81,7 +95,8 @@ var handlers = {
                 $('#worklogComment').val('');
             }
 
-            $('#jqGrid' + ent).trigger('reloadGrid');
+            if(action !== 'alarms' && action !== 'no')
+                $('#jqGrid' + ent).trigger('reloadGrid');
 
             if(action === 'stop' && ent !== 'Nte')
                 window.open((ent === 'Req' ? constants.sdpReqLinkUrl : ent === 'Tsk' ? constants.sdpTskLinkUrl : constants.jraTckLinkUrl) + entOb.ID);
@@ -158,7 +173,7 @@ var handlers = {
             var currentTime = new Date(curEnt.Active);
 
             switch(action){
-                case 'up':                    
+                case 'up':
                     currentTime.setTime(currentTime.getTime() - timeStamp);
 
                     if(currentTime > startWorkDay)
@@ -175,7 +190,9 @@ var handlers = {
             }
             
             localStorage[ent + 's'] = JSON.stringify(ents);            
-            initiators.initCurEnt(ent);
+            initiators.initCurEnt(ent, function() {
+                initiators.initFavEnt(ent);
+            });
         }
     },    
 
@@ -201,6 +218,9 @@ var handlers = {
                 case 'Grp':
                     eid = n.groupname;
                     break;
+                case 'alarms':
+                    eid = n.name;
+                    break;                    
                 default: //для данных из localStorage
                     eid = n.ID;
             }
@@ -222,7 +242,7 @@ var handlers = {
 
     addEntity: function(ent, idx, data){
         data.worktime = ent === 'Nte' ? data.Time : undefined;
-        data.condition = constants.entityDictionary[ent][1];
+        data.condition = constants.entityDictionary[ent][1] + '&nbsp;';
         data.actions = initiators.initBtn(ent, 'play', idx + 1, 'В работу');
         $('#jqGrid' + ent).jqGrid('addRowData', idx + 1, data);
     },
@@ -236,12 +256,23 @@ var handlers = {
         data.actions = initiators.initBtn(ent, 'pause', ids + 1, 'Приостановить')
                         + initiators.initBtn(ent, 'stop', ids + 1, 'Завершить')
                         + initiators.initBtn(ent, 'save', ids + 1, 'С комментарием');
-        
+
         $('#jqGrid' + ent).jqGrid('addRowData', ids + 1, data);
         $('#jqGrid' + ent).trigger('reloadGrid');
     },
 
-    updateEntity: function(ent, id, active) {
+    addFavouriteEntity: function(ent, data) {
+        debugger;
+        var ids = $('#jqGrid' + ent).jqGrid('getGridParam', 'records');
+
+        data.condition = constants.entityDictionary[ent][1] + ' избранное';
+        data.actions = initiators.initBtn(ent, 'play', ids + 1, 'В работу');
+        data.favourite = true;
+        $('#jqGrid' + ent).jqGrid('addRowData', ids + 1, data);
+        $('#jqGrid' + ent).trigger('reloadGrid');        
+    },
+
+    updateEntity: function(ent, id, active, fav) {
         debugger;
         var jqData = $('#jqGrid' + ent).jqGrid('getGridParam', 'data');
         var entOb = handlers.findEntityById(ent, jqData, id)[0];
@@ -251,10 +282,11 @@ var handlers = {
         entOb.worktime = active;
         entOb.condition = curEntId == id
                             ? constants.entityDictionary[ent][0] + ' в работе'
-                            : constants.entityDictionary[ent][1];
+                            : constants.entityDictionary[ent][1] + (fav ? ' избранное' : '&nbsp;');
         entOb.actions = curEntId == id ? (initiators.initBtn(ent, 'pause', entOb.jqId, 'Приостановить') +
                             initiators.initBtn(ent, 'stop', entOb.jqId, 'Завершить') +
                             initiators.initBtn(ent, 'save', entOb.jqId, 'С комментарием')) : initiators.initBtn(ent, 'play', entOb.jqId, 'В работу');
+        entOb.favourite = fav;
         
         $('#jqGrid' + ent).trigger('reloadGrid');
     },

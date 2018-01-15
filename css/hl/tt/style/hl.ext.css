@@ -6,6 +6,7 @@ body {
     height:24px;
     vertical-align:middle;
     outline:none;
+    cursor: pointer;
 }
 
 .options {

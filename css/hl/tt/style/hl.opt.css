@@ -1,4 +1,4 @@
-#sortable {
+#sortable, .release, .schedule {
     list-style-type: none;
     margin: 0;
     padding: 0;
@@ -29,12 +29,6 @@
     font-weight: 400;
 }
 
-.release {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-}
-
 .release > li {
     margin: 0 3px 3px;
     padding: 0.4em;
@@ -43,4 +37,43 @@
 .release > li > ul {
     list-style-type: disc;
     padding-left: 1.5em;
+}
+
+.table > thead > tr > th {
+    border-bottom-width: 0;
+}
+
+.table > tbody > tr > td {
+    border-top-width: 0;
+    padding: 0;
+}
+
+.schedule li {
+    border: 1px solid #ddd;
+    width: 27.615px;
+    height: 40px;
+    float: left;
+}
+
+.schedule .ui-selecting {
+    background: #5aa6d2;
+}
+
+.schedule .ui-selected {
+    background: #337ab7;
+}
+
+.header > tr > th {
+    padding: 0 !important;
+    font-weight: 500;
+}
+
+.header > tr > th > div {
+    display:table-column;
+    float:left;
+}
+
+.body > tr > td:first-child {
+    vertical-align: middle !important;
+    width: 100px;
 }

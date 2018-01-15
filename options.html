@@ -15,14 +15,15 @@
     <link rel="stylesheet" href="css/hl/tt/style/hl.ext.css">
     <link rel="stylesheet" href="css/hl/tt/style/hl.opt.css">
     <!--scripts-->
-    <script type="text/javascript" src="scripts/jquery/jquery-2.1.4.min.js"></script>
-    <script type="text/javascript" src="scripts/jquery/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="scripts/bootstrap/bootstrap.min.js"></script>
-    <script type="text/javascript" src="scripts/bootstrap/material.min.js"></script>
-    <script type="text/javascript" src="scripts/bootstrap/ripples.min.js"></script>
-    <script type="text/javascript" src="scripts/hl/tt/scripts/constants.js"></script>
-    <script type="text/javascript" src="scripts/hl/tt/scripts/handlers.js"></script>
-    <script type="text/javascript" src="scripts/options.js"></script>
+    <script src="scripts/jquery/jquery-2.1.4.min.js"></script>
+    <script src="scripts/jquery/jquery-ui.min.js"></script>
+    <script src="scripts/bootstrap/bootstrap.min.js"></script>
+    <script src="scripts/bootstrap/material.min.js"></script>
+    <script src="scripts/bootstrap/ripples.min.js"></script>
+    <script src="scripts/hl/tt/scripts/constants.js"></script>    
+    <script src="scripts/hl/tt/scripts/handlers.js"></script>
+    <script src="scripts/hl/tt/scripts/services.js"></script>
+    <script src="scripts/options.js"></script>
 </head>
 <body>    
     <div class="options row" style="margin:15px">
@@ -30,6 +31,7 @@
             <span id="version" class="pull-right"></span>
             <ul class="nav nav-tabs" style="margin-bottom:20px">
                 <li class="active"><a href="#settings" data-toggle="tab">Настройка</a></li>
+                <li><a href="#notice" data-toggle="tab">Уведомления</a></li>
                 <li><a href="#release" data-toggle="tab">Обновления</a></li>
             </ul>
             <div id="tabs" class="tab-content">
@@ -159,8 +161,60 @@
                         <button type="submit" id="saveBtn" class="btn btn-success pull-right">Сохранить</button>                
                     </form>  
                 </div>
+                <!-- Настройка уведомлений и расписания -->                
+                <div class="tab-pane fade" id="notice">
+                    <form role="form" method="POST" class="form-horizontal col-sm-12">
+                        <fieldset>
+                            <div class="row">                                
+                                <div class="col-sm-5">
+                                    <div class="checkbox" style="top:5px">
+                                        <label><input type="checkbox" id="chCur"> Уведомление по текущей задаче</label>                                
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="form-group label-floating" style="margin:0">
+                                        <label class="control-label" for="ntcLimit">Периодичность (мин)</label>
+                                        <input class="form-control" id="ntcLimit" name="ntcLimit" type="number" min="1" max="180" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--div class="checkbox" style="top:5px">
+                                <label><input type="checkbox" id="chSch"> Уведомление</label>
+                            </div>
+                            <table id="schedule_table" class="table"></table-->                                                      
+                        </fieldset>
+                        <button type="submit" id="saveNtc" class="btn btn-success pull-right">Сохранить</button> 
+                    </form>                    
+                </div>
+                <!-- Страница описания обновлений -->
                 <div class="tab-pane fade" id="release">
                     <ul class="release">
+                        <li class="ui-state-default">
+                            <div class="row">
+                                <div class="col-sm-2"><span>15.01.2018</span></div>
+                                <div class="col-sm-push-8 col-sm-2"><span class="pull-right">Ver. 0.5.03</span></div>
+                            </div>
+                            <ul>
+                                <li>Разработан функционал добавления сущности (тикет, заявка, задача) в избранное</li>
+                                <li>Добавлен функционал контекстного меню по каждой из сущности</li>
+                                <li>Доработан функционал "для забывчивых"</li>
+                                <li>Мелкие исправления стабильности функционирования приложения</li>                               
+                            </ul>
+                        </li>
+                        <li class="ui-state-default">
+                            <div class="row">
+                                <div class="col-sm-2"><span>29.12.2017</span></div>
+                                <div class="col-sm-push-8 col-sm-2"><span class="pull-right">Ver. 0.5.02_alfa</span></div>
+                            </div>
+                            <ul>
+                                <li>Добавлен функционал уведомлений "для забывчивых"</li>
+                                <p>Суть его в том, что с настроенной периодичностью Вам будут приходить уведомления типа ChromeNotification с вопросом о том,
+                                    действительно ли Вы продолжаете работу над задачей. В случае отсутствия ответа в течении опять же настроенной периодичности
+                                    трекинг времени по задаче прекратится, а в журнал работ сохранится соответствующая информация.
+                                </p>
+                                <p style="color:red">Данный функционал находится в стадии альфа-тестирования</p>
+                            </ul>
+                        </li>
                         <li class="ui-state-default">
                             <div class="row">
                                 <div class="col-sm-2"><span>27.11.2017</span></div>

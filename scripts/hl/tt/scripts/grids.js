@@ -18,13 +18,14 @@ var grids = {
             id: 'jqId'
         },
         colModel: [
+            { label: ' ', name: 'favourite', title: false, width: 30, align: 'center', search: false, formatter: formatter.entFavouriteFormatter },
             { label: 'ID', name: 'eid', jsonmap: 'workorderid', title: false, width: 40, align: 'center', search: true, searchoptions: { sopt: [ 'eq' ] } },
             {
-                label: 'Тема', name: 'subject', title: false, width: 395, formatter: formatter.reqSubjectFormatter, unformat: unformatter.titleUnformatter, search: false,
+                label: 'Тема', name: 'subject', title: false, width: 380, formatter: formatter.reqSubjectFormatter, unformat: unformatter.titleUnformatter, search: false,
                 editable: true, editrules: { required: true }, formoptions: { elmsuffix: '<span style="color:red"> *</span>', rowpos: 7 }, edittype: 'text'
             },
             { label: 'Статус', name: 'status', title: false, width: 100, sortable: true, search: false },
-            { label: 'Счётчик', name: 'worktime', title: false, width: 110, align: 'center', formatter: formatter.workTimeFormatter, search: false },
+            { label: 'Счётчик', name: 'worktime', title: false, width: 95, align: 'center', formatter: formatter.workTimeFormatter, search: false },
             { label: ' ', name: 'actions', title: false, width: 55, align: 'center', search: false },
             { label: ' ', name: 'condition', title: false, hidden: true },
             {
@@ -106,7 +107,6 @@ var grids = {
             { label: 'Описание', name: 'body', hidden: true, editable: true, editrules: { edithidden: true }, formoptions: { rowpos: 8 }, edittype: 'textarea' },
             { label: 'Взять в работу', name: 'setInProgress', hidden: true, editable: true, editrules: { edithidden: true }, formoptions: { rowpos: 9 }, edittype: 'checkbox' }
         ],
-        //onSelectRow: function() { $('#jqGridReq').resetSelection(); },
         loadComplete: function(data) {  
             initiators.initBtnAction('Req');
             initiators.initTabBadge('Req');
@@ -132,10 +132,11 @@ var grids = {
             id: 'jqId'
         },
         colModel: [
+            { label: ' ', name: 'favourite', title: false, width: 30, align: 'center', search: false, formatter: formatter.entFavouriteFormatter },
             { label: 'ID', name: 'eid', jsonmap: 'id', title: false, width: 40, align: 'center', search: true, searchoptions: { sopt: [ 'eq' ] } },
-            { label: 'Название', name: 'subject', jsonmap: 'title', title: false, width: 395, formatter: formatter.tskTitleFormatter, search: false, unformat: unformatter.titleUnformatter },
+            { label: 'Название', name: 'subject', jsonmap: 'title', title: false, width: 380, formatter: formatter.tskTitleFormatter, search: false, unformat: unformatter.titleUnformatter },
             { label: 'Статус', name: 'status.name', title: false, width: 100, sortable: true, search: false },
-            { label: 'Счётчик', name: 'worktime', title: false, width: 110, align: 'center', formatter: formatter.workTimeFormatter, search: false },
+            { label: 'Счётчик', name: 'worktime', title: false, width: 95, align: 'center', formatter: formatter.workTimeFormatter, search: false },
             { label: ' ', name: 'actions', title: false, width: 55, align: 'center', search: false },
             { label: ' ', name: 'condition', title: false, hidden: true }
         ],
@@ -165,6 +166,7 @@ var grids = {
             id: 'jqId'
         },
         colModel: [
+            { label: ' ', name: 'favourite', title: false, width: 30, align: 'center', search: false, formatter: formatter.entFavouriteFormatter },
             {
                 label: 'ID', name: 'eid', jsonmap: 'key', title: false, width: 75, align: 'center', search: true, searchoptions: { sopt: [ 'eq' ],
                 dataInit: function(el){
@@ -173,14 +175,14 @@ var grids = {
                 }} 
             },
             { label: 'Название', name: 'subject', jsonmap: 'fields.summary', title: false, width: 320, formatter: formatter.tckTitleFormatter, unformat: unformatter.titleUnformatter, search: false },
-            { label: 'Статус', name: 'fields.status.name', title: false, width: 110, sortable: true, search: false },
+            { label: 'Статус', name: 'fields.status.name', title: false, width: 95, sortable: true, search: false },
             { label: ' ', name: 'fields.priority.id', title: false, width: 30, align: 'center', sortable: true, search: false, formatter: formatter.tckPriorityFormatter },
-            { label: 'Счётчик', name: 'worktime', title: false, width: 110, align: 'center', formatter: formatter.workTimeFormatter, search: false },
+            { label: 'Счётчик', name: 'worktime', title: false, width: 95, align: 'center', formatter: formatter.workTimeFormatter, search: false },
             { label: ' ', name: 'actions', title: false, width: 55, align: 'center', search: false },
             { label: ' ', name: 'condition', title: false, hidden: true },
-            { label: ' ', name: 'fields.priority.iconUrl', hidden: true }
+            { label: ' ', name: 'fields.priority.iconUrl', hidden: true },            
         ],
-        onSelectRow: function () { $('#jqGridTck').resetSelection(); },
+        //onSelectRow: function () { $('#jqGridTck').resetSelection(); },
         loadComplete: function (data) {
             initiators.initBtnAction('Tck');
             initiators.initTabBadge('Tck');
@@ -970,3 +972,35 @@ var navGrids = {
         custBtn: []
     }
 };
+
+var cntxtMenu = {
+    Req: {
+        items: {
+            share: {
+                name: 'Создать тикет Jira',
+                icon: 'share',
+                callback: function(key, options){
+                    navGrids['Req'].custBtn[0].onClickButton();
+                }
+            }
+        }
+    },
+    Tsk: { },
+    Tck: { },    
+    Nte: { 
+        items: {
+            delete: {
+                name: 'Удалить',
+                icon: 'delete',
+                callback: function(key, options){
+                    debugger;
+                    var rowId = options.$trigger.attr('id');
+                    if(navGrids['Nte'].delOpts.afterSubmit({ status: 200 }, { id: rowId })[0])
+                        $('#jqGridNte').jqGrid('delRowData', rowId)
+
+                    $('#jqGridNte').trigger('reloadGrid');
+                }
+            }
+        }
+     }
+}
